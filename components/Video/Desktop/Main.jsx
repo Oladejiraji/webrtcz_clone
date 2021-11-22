@@ -53,28 +53,30 @@ const Main = () => {
         />
       )}
       {isCamera && isScreen && (
-        <Rnd
-          onResize={null}
-          style={style}
-          default={{
-            x: 0,
-            y: 0,
-            width: 320,
-            height: 320,
-            borderRadius: '100%'
-          }}
-        >
-          <SmallCamera
-            isVideoPlaying={isVideoPlaying}
-            setIsVideoPlaying={setIsVideoPlaying}
-            isCanvasEmpty={isCanvasEmpty}
-            setIsCanvasEmpty={setIsCanvasEmpty}
-            onClear={onClear}
-            onCapture={onCapture}
-            ref={cameraRef}
-            setIsCamera={setIsCamera}
-          />
-          {/* <Screen
+        <>
+          <Rnd
+            onResize={null}
+            style={style}
+            default={{
+              x: 0,
+              y: 0,
+              width: 320,
+              height: 320,
+              borderRadius: '100%'
+            }}
+          >
+            <SmallCamera
+              isVideoPlaying={isVideoPlaying}
+              setIsVideoPlaying={setIsVideoPlaying}
+              isCanvasEmpty={isCanvasEmpty}
+              setIsCanvasEmpty={setIsCanvasEmpty}
+              onClear={onClear}
+              onCapture={onCapture}
+              ref={cameraRef}
+              setIsCamera={setIsCamera}
+            />
+          </Rnd>
+          <Screen
             isScreenPlaying={isScreenPlaying}
             setIsScreenPlaying={setIsScreenPlaying}
             isCanvasEmpty={isCanvasEmpty}
@@ -84,8 +86,8 @@ const Main = () => {
             ref={cameraRef}
             isScreen={isScreen}
             setIsScreen={setIsScreen}
-          /> */}
-        </Rnd>
+          />
+        </>
       )}
       <Spring
         isCanvasEmpty={isCanvasEmpty}

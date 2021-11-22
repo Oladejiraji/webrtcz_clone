@@ -1,43 +1,21 @@
-import React, {
-  useState,
-  useRef,
-  forwardRef,
-  useImperativeHandle
-} from 'react';
+import React, { useState, useRef } from 'react';
 import Measure from 'react-measure';
-import { useUserMedia, useCardRatio, useOffsets } from '../../../Hooks';
-import { Video, Wrapper, Container, Button } from './styles';
+import { useUserMedia, useCardRatio } from '../../../Hooks';
+import { Video, Wrapper, Container } from './styles';
 
 const CAPTURE_OPTIONS = {
   audio: false,
   video: { facingMode: 'environment' }
 };
 
-const Camera = forwardRef((props, ref) => {
-  const {
-    onCapture,
-    onClear,
-    isVideoPlaying,
-    setIsVideoPlaying,
-    isCanvasEmpty,
-    setIsCanvasEmpty
-  } = props;
-  const canvasRef = useRef();
+const Camera = (props) => {
+  const { isVideoPlaying, setIsVideoPlaying } = props;
   const videoRef = useRef();
-  //   console.log(videoRef.current.play());
 
   const [container, setContainer] = useState({ width: 0, height: 0 });
 
-  const [isFlashing, setIsFlashing] = useState(false);
-
   const mediaStream = useUserMedia(CAPTURE_OPTIONS);
-  const [aspectRatio, calculateRatio] = useCardRatio(1.9);
-  const offsets = useOffsets(
-    videoRef.current && videoRef.current.videoWidth,
-    videoRef.current && videoRef.current.videoHeight,
-    container.width,
-    container.height
-  );
+  const [aspectRatio, calculateRatio] = useCardRatio(1);
 
   if (mediaStream && videoRef.current && !videoRef.current.srcObject) {
     videoRef.current.srcObject = mediaStream;
@@ -68,9 +46,6 @@ const Camera = forwardRef((props, ref) => {
             ref={measureRef}
             maxHeight={videoRef.current && videoRef.current.videoHeight}
             maxWidth={videoRef.current && videoRef.current.videoWidth}
-            // style={{
-            //   height: `${container.height}px`
-            // }}
           >
             <Video
               ref={videoRef}
@@ -79,16 +54,12 @@ const Camera = forwardRef((props, ref) => {
               autoPlay
               playsInline
               muted
-              // style={{
-              //   top: `-${offsets.y}px`,
-              //   left: `-${offsets.x}px`
-              // }}
             />
           </Container>
         </Wrapper>
       )}
     </Measure>
   );
-});
+};
 
 export default Camera;

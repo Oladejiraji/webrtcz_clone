@@ -7,7 +7,7 @@ export const Wrapper = styled.div`
   width: 100%;
   height: 100%;
   position: relative;
-  background: #000;
+  background: transparent;
 `;
 
 export const Container = styled.div`

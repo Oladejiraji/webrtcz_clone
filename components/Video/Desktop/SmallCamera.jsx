@@ -1,12 +1,7 @@
-import React, {
-  useState,
-  useRef,
-  forwardRef,
-  useImperativeHandle
-} from 'react';
+import React, { useState, useRef, forwardRef } from 'react';
 import Measure from 'react-measure';
-import { useUserMedia, useCardRatio, useOffsets } from '../../../Hooks';
-import { Video, Wrapper, Container, Button } from './smallStyle';
+import { useUserMedia, useCardRatio } from '../../../Hooks';
+import { Video, Wrapper, Container } from './smallStyle';
 import { ImCancelCircle } from 'react-icons/im';
 import { Icon } from '@chakra-ui/react';
 
@@ -15,22 +10,14 @@ const CAPTURE_OPTIONS = {
   video: { facingMode: 'environment' }
 };
 
-const SmallCamera = forwardRef((props, ref) => {
+const SmallCamera = (props) => {
   const { isVideoPlaying, setIsVideoPlaying, setIsCamera } = props;
   const videoRef = useRef();
-  //   console.log(videoRef.current.play());
 
   const [container, setContainer] = useState({ width: 0, height: 0 });
 
   const mediaStream = useUserMedia(CAPTURE_OPTIONS);
   const [aspectRatio, calculateRatio] = useCardRatio(1.9);
-  const offsets = useOffsets(
-    videoRef.current && videoRef.current.videoWidth,
-    videoRef.current && videoRef.current.videoHeight,
-    container.width,
-    container.height
-  );
-
   if (mediaStream && videoRef.current && !videoRef.current.srcObject) {
     videoRef.current.srcObject = mediaStream;
   }
@@ -77,6 +64,6 @@ const SmallCamera = forwardRef((props, ref) => {
       )}
     </Measure>
   );
-});
+};
 
 export default SmallCamera;

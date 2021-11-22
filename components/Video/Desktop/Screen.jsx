@@ -14,17 +14,8 @@ const CAPTURE_OPTIONS = {
 };
 
 const Screen = forwardRef((props, ref) => {
-  const {
-    onCapture,
-    onClear,
-    isScreenPlaying,
-    setIsScreenPlaying,
-    isCanvasEmpty,
-    setIsCanvasEmpty
-  } = props;
-  const canvasRef = useRef();
+  const { isScreenPlaying, setIsScreenPlaying } = props;
   const videoRef = useRef();
-  //   console.log(videoRef.current.play());
 
   const [container, setContainer] = useState({ width: 0, height: 0 });
 
@@ -32,12 +23,6 @@ const Screen = forwardRef((props, ref) => {
 
   const mediaStream = useDisplayMedia(CAPTURE_OPTIONS);
   const [aspectRatio, calculateRatio] = useCardRatio(1.9);
-  const offsets = useOffsets(
-    videoRef.current && videoRef.current.videoWidth,
-    videoRef.current && videoRef.current.videoHeight,
-    container.width,
-    container.height
-  );
 
   if (mediaStream && videoRef.current && !videoRef.current.srcObject) {
     videoRef.current.srcObject = mediaStream;
@@ -68,9 +53,6 @@ const Screen = forwardRef((props, ref) => {
             ref={measureRef}
             maxHeight={videoRef.current && videoRef.current.videoHeight}
             maxWidth={videoRef.current && videoRef.current.videoWidth}
-            style={{
-              height: `${container.height}px`
-            }}
           >
             <Video
               ref={videoRef}
@@ -79,10 +61,6 @@ const Screen = forwardRef((props, ref) => {
               autoPlay
               playsInline
               muted
-              style={{
-                top: `-${offsets.y}px`,
-                left: `-${offsets.x}px`
-              }}
             />
           </Container>
         </Wrapper>

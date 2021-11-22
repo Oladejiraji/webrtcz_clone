@@ -26,7 +26,6 @@ export const Video = styled.video`
   }
   width: 100vw;
   height: 100%;
-  object-fit: cover;
 `;
 
 export const Button = styled.button`

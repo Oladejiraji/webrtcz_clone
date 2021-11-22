@@ -21,6 +21,7 @@
   position: absolute;
   bottom: 20px;
   left: 50%;
+  transform: translateX(-50%);
   cursor: pointer;
   border: none;
   padding: 0.5rem 1.2rem;
@@ -33,14 +34,9 @@
 
 .react-draggable {
   overflow: hidden;
-  /* background-color: #000 !important; */
   border: none !important;
-  /* border-radius: 100%; */
-}
-
-.small_camera {
-  /* position: relative;
-  height: 100%; */
+  background: none !important;
+  z-index: 1000;
 }
 
 .cancel {
@@ -48,6 +44,6 @@
   left: 17%;
   top: 20px;
   z-index: 100000;
-  color: #fff;
+  color: red;
   cursor: pointer;
 }
