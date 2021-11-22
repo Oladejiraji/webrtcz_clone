@@ -1,0 +1,53 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+.camera_btn {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.main {
+  position: relative;
+  background-color: #000;
+  min-width: 100vw;
+  min-height: 100vh;
+}
+
+.openSpring {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  cursor: pointer;
+  border: none;
+  padding: 0.5rem 1.2rem;
+  font-size: 1.5rem;
+  font-weight: 400;
+  background-color: teal;
+  color: #fff;
+  border-radius: 5px;
+}
+
+.react-draggable {
+  overflow: hidden;
+  /* background-color: #000 !important; */
+  border: none !important;
+  /* border-radius: 100%; */
+}
+
+.small_camera {
+  /* position: relative;
+  height: 100%; */
+}
+
+.cancel {
+  position: absolute;
+  left: 17%;
+  top: 20px;
+  z-index: 100000;
+  color: #fff;
+  cursor: pointer;
+}

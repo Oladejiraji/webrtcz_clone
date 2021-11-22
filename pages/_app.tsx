@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
-import 'assets/main.css';
-import 'assets/chrome-bug.css';
+// import 'assets/main.css';
+// import 'assets/chrome-bug.css';
+import '../public/styles/style.css';
 import React from 'react';
 
 import Layout from 'components/Layout';
@@ -14,11 +15,11 @@ export default function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <div className="bg-primary">
-      <UserContextProvider>
-        <Layout>
-          <Component {...pageProps} />
-        </Layout>
-      </UserContextProvider>
+      {/* <UserContextProvider>
+        <Layout> */}
+      <Component {...pageProps} />
+      {/* </Layout>
+      </UserContextProvider> */}
     </div>
   );
 }
