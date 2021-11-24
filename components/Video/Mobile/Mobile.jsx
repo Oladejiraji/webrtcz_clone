@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Box, Button, Text } from '@chakra-ui/react';
 import dynamic from 'next/dynamic';
 
-const QrReader = dynamic(() => import('react-qr-reader'), {
+const QrReader = dynamic(() => import('react-qr-scanner'), {
   ssr: false
 });
 
@@ -11,7 +11,8 @@ const Mobile = () => {
   const [result, setResult] = useState('No result');
   const [isQr, setIsQr] = useState(false);
   const previewStyle = {
-    width: '100%'
+    width: '100vw',
+    height: '100vh'
   };
   const handleScan = (data) => {
     if (data) {
@@ -38,7 +39,7 @@ const Mobile = () => {
       {isQr && (
         <Box w="100vw" h="100vh" justifyContent="center" alignItems="center">
           <QrReader
-            delay={300}
+            delay={delay}
             style={previewStyle}
             onError={handleError}
             onScan={handleScan}
