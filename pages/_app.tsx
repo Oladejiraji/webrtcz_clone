@@ -2,11 +2,13 @@ import { useEffect } from 'react';
 // import 'assets/main.css';
 // import 'assets/chrome-bug.css';
 import '../public/styles/style.css';
+import { ChakraProvider } from '@chakra-ui/react';
 import React from 'react';
-
+import { Provider } from 'react-redux';
 import Layout from 'components/Layout';
 import { UserContextProvider } from 'utils/useUser';
 import { AppProps } from 'next/app';
+import { store } from '../redux/store';
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   useEffect(() => {
@@ -17,7 +19,11 @@ export default function MyApp({ Component, pageProps }: AppProps) {
     <div className="bg-primary">
       {/* <UserContextProvider>
         <Layout> */}
-      <Component {...pageProps} />
+      <Provider store={store}>
+        <ChakraProvider>
+          <Component {...pageProps} />
+        </ChakraProvider>
+      </Provider>
       {/* </Layout>
       </UserContextProvider> */}
     </div>

@@ -1,5 +1,6 @@
 import React from 'react';
 import Main from '../components/Video/Desktop/Main';
+import Mobile from '../components/Video/Mobile/Mobile';
 import { UserAgentProvider, UserAgent } from '@quentin-sommer/react-useragent';
 
 const Video = ({ ua }) => {
@@ -7,7 +8,7 @@ const Video = ({ ua }) => {
     <UserAgentProvider ua={ua}>
       <div>
         <UserAgent mobile>
-          <p>This will only be rendered on mobile</p>
+          <Mobile />
         </UserAgent>
         <UserAgent computer>
           <Main />

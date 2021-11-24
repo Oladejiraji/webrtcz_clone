@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Measure from 'react-measure';
 import { useUserMedia, useCardRatio } from '../../../Hooks';
 import { Video, Wrapper, Container } from './styles';
@@ -9,7 +9,7 @@ const CAPTURE_OPTIONS = {
 };
 
 const Camera = (props) => {
-  const { isVideoPlaying, setIsVideoPlaying } = props;
+  const { isVideoPlaying, setIsVideoPlaying, handleMediaStream } = props;
   const videoRef = useRef();
 
   const [container, setContainer] = useState({ width: 0, height: 0 });
@@ -20,6 +20,11 @@ const Camera = (props) => {
   if (mediaStream && videoRef.current && !videoRef.current.srcObject) {
     videoRef.current.srcObject = mediaStream;
   }
+  useEffect(() => {
+    if (mediaStream) {
+      handleMediaStream(mediaStream);
+    }
+  }, [mediaStream]);
 
   function handleResize(contentRect) {
     setContainer({

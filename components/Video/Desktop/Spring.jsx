@@ -6,23 +6,43 @@ import { CgScreen } from 'react-icons/cg';
 import { ImConnection } from 'react-icons/im';
 import { MdDesktopAccessDisabled } from 'react-icons/md';
 import { BottomSheet } from 'react-spring-bottom-sheet';
-import { Button } from '@chakra-ui/react';
+import BarModal from './BarModal';
+import { useDisclosure, useToast } from '@chakra-ui/react';
 import 'react-spring-bottom-sheet/dist/style.css';
 
 const Spring = (props) => {
   const {
-    isCanvasEmpty,
-    isVideoPlaying,
-    isScreenPlaying,
     isCamera,
     setIsCamera,
     isScreen,
-    setIsScreen
+    setIsScreen,
+    screenStream,
+    mediaStream
   } = props;
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const [open, setOpen] = useState(false);
+  const toast = useToast();
   function onDismiss() {
     setOpen(false);
   }
+  const openBarModal = () => {
+    if ((mediaStream || screenStream) && (isScreen || isCamera)) {
+      setOpen(false);
+      setTimeout(() => {
+        onOpen();
+      }, 100);
+    } else {
+      setOpen(false);
+      toast({
+        description:
+          'You need to use camera or screen sharing before connecting',
+        status: 'warning',
+        duration: 9000,
+        isClosable: true,
+        position: 'top'
+      });
+    }
+  };
 
   return (
     <div>
@@ -38,7 +58,6 @@ const Spring = (props) => {
           <Box mr="40px" ml="40px">
             <button
               className="camera_btn"
-              // onClick={isCanvasEmpty ? proxyHandleCapture : proxyHandleClear}
               onClick={() => setIsCamera(!isCamera)}
             >
               {isCamera ? (
@@ -46,14 +65,11 @@ const Spring = (props) => {
               ) : (
                 <Icon as={AiOutlineCamera} w={23} h={23} />
               )}
-
-              {/* {isCanvasEmpty && <Icon as={AiOutlineCamera} w={23} h={23} />} */}
             </button>
           </Box>
           <Box mr="40px" ml="40px">
             <button
               className="camera_btn"
-              // onClick={isCanvasEmpty ? proxyHandleCapture : proxyHandleClear}
               onClick={() => setIsScreen(!isScreen)}
             >
               {isScreen ? (
@@ -61,15 +77,21 @@ const Spring = (props) => {
               ) : (
                 <Icon as={CgScreen} w={23} h={23} />
               )}
-
-              {/* {isCanvasEmpty && <Icon as={AiOutlineCamera} w={23} h={23} />} */}
             </button>
           </Box>
           <Box mr="40px" ml="40px">
-            <Icon as={ImConnection} w={23} h={23} />
+            <div className="camera_btn" onClick={openBarModal}>
+              <Icon as={ImConnection} w={23} h={23} />
+            </div>
           </Box>
         </Box>
       </BottomSheet>
+      <BarModal
+        isOpen={isOpen}
+        onClose={onClose}
+        mediaStream={mediaStream}
+        screenStream={screenStream}
+      />
     </div>
   );
 };

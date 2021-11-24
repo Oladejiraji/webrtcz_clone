@@ -1,27 +1,24 @@
-import React, {
-  useState,
-  useRef,
-  forwardRef,
-  useImperativeHandle
-} from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Measure from 'react-measure';
-import { useDisplayMedia, useCardRatio, useOffsets } from '../../../Hooks';
-import { Video, Wrapper, Container, Button } from './styles';
+import { useDisplayMedia, useCardRatio } from '../../../Hooks';
+import { Video, Wrapper, Container } from './styles';
 
 const CAPTURE_OPTIONS = {
   audio: false
-  // video: { facingMode: 'environment' }
 };
 
-const Screen = forwardRef((props, ref) => {
-  const { isScreenPlaying, setIsScreenPlaying } = props;
+const Screen = (props) => {
+  const { isScreenPlaying, setIsScreenPlaying, handleScreenStream } = props;
   const videoRef = useRef();
 
   const [container, setContainer] = useState({ width: 0, height: 0 });
 
-  const [isFlashing, setIsFlashing] = useState(false);
-
   const mediaStream = useDisplayMedia(CAPTURE_OPTIONS);
+  useEffect(() => {
+    if (mediaStream) {
+      handleScreenStream(mediaStream);
+    }
+  }, [mediaStream]);
   const [aspectRatio, calculateRatio] = useCardRatio(1.9);
 
   if (mediaStream && videoRef.current && !videoRef.current.srcObject) {
@@ -67,6 +64,6 @@ const Screen = forwardRef((props, ref) => {
       )}
     </Measure>
   );
-});
+};
 
 export default Screen;

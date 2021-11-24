@@ -11,13 +11,20 @@ const Main = () => {
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [isScreenPlaying, setIsScreenPlaying] = useState(false);
   const [isCanvasEmpty, setIsCanvasEmpty] = useState(true);
-  const cameraRef = useRef();
+  const [screenStream, setScreenStream] = useState(null);
+  const [mediaStream, setMediaStream] = useState(null);
 
   const onClear = () => {
     console.log('cleared');
   };
   const onCapture = () => {
     console.log('captured');
+  };
+  const handleScreenStream = (screenStream) => {
+    setScreenStream(screenStream);
+  };
+  const handleMediaStream = (mediaStream) => {
+    setMediaStream(mediaStream);
   };
   const style = {
     display: 'flex',
@@ -36,9 +43,9 @@ const Main = () => {
           setIsCanvasEmpty={setIsCanvasEmpty}
           onClear={onClear}
           onCapture={onCapture}
-          ref={cameraRef}
           isScreen={isScreen}
           setIsScreen={setIsScreen}
+          handleScreenStream={handleScreenStream}
         />
       )}
       {isCamera && !isScreen && (
@@ -49,7 +56,7 @@ const Main = () => {
           setIsCanvasEmpty={setIsCanvasEmpty}
           onClear={onClear}
           onCapture={onCapture}
-          ref={cameraRef}
+          handleMediaStream={handleMediaStream}
         />
       )}
       {isCamera && isScreen && (
@@ -72,8 +79,8 @@ const Main = () => {
               setIsCanvasEmpty={setIsCanvasEmpty}
               onClear={onClear}
               onCapture={onCapture}
-              ref={cameraRef}
               setIsCamera={setIsCamera}
+              handleMediaStream={handleMediaStream}
             />
           </Rnd>
           <Screen
@@ -83,9 +90,9 @@ const Main = () => {
             setIsCanvasEmpty={setIsCanvasEmpty}
             onClear={onClear}
             onCapture={onCapture}
-            ref={cameraRef}
             isScreen={isScreen}
             setIsScreen={setIsScreen}
+            handleScreenStream={handleScreenStream}
           />
         </>
       )}
@@ -96,6 +103,8 @@ const Main = () => {
         setIsCamera={setIsCamera}
         isScreen={isScreen}
         setIsScreen={setIsScreen}
+        screenStream={screenStream}
+        mediaStream={mediaStream}
       />
     </div>
   );
