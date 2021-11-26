@@ -1,4 +1,4 @@
-export default function reduce(desc) {
+export const reduce = (desc) => {
   var sdp = desc.sdp;
   if (sdp !== undefined) {
     var lines = sdp.split('\r\n');
@@ -60,4 +60,76 @@ export default function reduce(desc) {
     });
     return [desc.type === 'offer' ? 'O' : 'A'].concat(comp).join(',');
   }
-}
+};
+
+export const expand = (str) => {
+  var comp = str.split(',');
+  var sdp = [
+    'v=0',
+    'o=- 5498186869896684180 2 IN IP4 127.0.0.1',
+    's=-',
+    't=0 0',
+    'a=msid-semantic: WMS',
+    'm=application 9 DTLS/SCTP 5000',
+    'c=IN IP4 0.0.0.0',
+    'a=mid:data',
+    'a=sctpmap:5000 webrtc-datachannel 1024'
+  ];
+  if (comp[0] === 'A') {
+    sdp.push('a=setup:active');
+  } else {
+    sdp.push('a=setup:actpass');
+  }
+  sdp.push('a=ice-ufrag:' + comp[1]);
+  sdp.push('a=ice-pwd:' + comp[2]);
+  sdp.push(
+    'a=fingerprint:sha-256 ' +
+      atob(comp[3])
+        .split('')
+        .map(function (c) {
+          var d = c.charCodeAt(0);
+          var e = c.charCodeAt(0).toString(16).toUpperCase();
+          if (d < 16) e = '0' + e;
+          return e;
+        })
+        .join(':')
+  );
+  var candparts;
+  candparts = comp.splice(4, 2).map(function (c) {
+    return parseInt(c, 32);
+  });
+  var ip = [
+    (candparts[0] >> 24) & 0xff,
+    (candparts[0] >> 16) & 0xff,
+    (candparts[0] >> 8) & 0xff,
+    candparts[0] & 0xff
+  ].join('.');
+  var cand = [
+    'a=candidate:0', // foundation 0
+    '1',
+    'udp',
+    '1', // priority 1
+    ip,
+    candparts[1],
+    'typ host' // well, not a host cand but...
+  ];
+  sdp.push(cand.join(' '));
+  // parse subsequent candidates
+  var prio = 2;
+  for (var i = 4; i < comp.length; i++) {
+    cand = [
+      'a=candidate:0',
+      '1',
+      'udp',
+      prio++, // increase priority
+      ip, // ip stays the same
+      parseInt(comp[i], 32), // port changes
+      'typ host' // well, not a host cand but...
+    ];
+    sdp.push(cand.join(' '));
+  }
+  return {
+    type: comp[0] === 'O' ? 'offer' : 'answer',
+    sdp: sdp.join('\r\n') + '\r\n'
+  };
+};

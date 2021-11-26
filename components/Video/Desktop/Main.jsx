@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { Rnd } from 'react-rnd';
 import Spring from './Spring';
 import Camera from './Camera';
