@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   Button,
   Text,
@@ -8,7 +8,10 @@ import {
   AccordionItem,
   AccordionButton,
   AccordionPanel,
-  AccordionIcon
+  AccordionIcon,
+  Select,
+  Option,
+  Input
 } from '@chakra-ui/react';
 import SelectSearch from 'react-select-search';
 import { BottomSheet } from 'react-spring-bottom-sheet';
@@ -16,6 +19,12 @@ import { BiVideo } from 'react-icons/bi';
 import { AiOutlineAudio } from 'react-icons/ai';
 import { BsFillPenFill } from 'react-icons/bs';
 import { VscDebugDisconnect } from 'react-icons/vsc';
+import { BiUndo } from 'react-icons/bi';
+import { BiRedo } from 'react-icons/bi';
+import { MdClear } from 'react-icons/md';
+import { GrFormAdd } from 'react-icons/gr';
+import { Tools } from '../../../react-sketch';
+import { SketchPicker } from 'react-color';
 
 const options = [
   { name: 'Phone', value: 'phone' },
@@ -23,8 +32,16 @@ const options = [
 ];
 
 const MobileSpring = (props) => {
-  const { open, setOpen } = props;
+  const {
+    open,
+    setOpen,
+    sketchRef,
+    setCurrTool,
+    lineColor,
+    setLineColor
+  } = props;
   const focusRef = useRef();
+  const [addTextValue, setAddTextValue] = useState('');
   function onDismiss() {
     setOpen(false);
   }
@@ -33,6 +50,30 @@ const MobileSpring = (props) => {
     console.log('ARGS:', args);
 
     console.log('CHANGE:');
+  };
+
+  const undo = () => {
+    sketchRef.current.undo();
+  };
+
+  const redo = () => {
+    sketchRef.current.redo();
+  };
+
+  const clear = () => {
+    sketchRef.current.clear();
+  };
+
+  const addText = () => {
+    sketchRef.current.addText(addTextValue);
+  };
+
+  const handleToolsChange = (e) => {
+    setCurrTool(e.target.value);
+  };
+
+  const handleColorChange = (color) => {
+    setLineColor();
   };
   return (
     <Box>
@@ -75,10 +116,39 @@ const MobileSpring = (props) => {
                 </AccordionButton>
               </h2>
               <AccordionPanel pb={4}>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-                enim ad minim veniam, quis nostrud exercitation ullamco laboris
-                nisi ut aliquip ex ea commodo consequat.
+                <Box display="flex" justifyContent="center" gridGap={10}>
+                  <Icon as={BiUndo} w={8} h={8} onClick={undo} />
+                  <Icon as={BiRedo} w={8} h={8} onClick={redo} />
+                  <Icon as={MdClear} w={8} h={8} onClick={clear} />
+                </Box>
+                <Box display="flex" justifyContent="center">
+                  <SketchPicker
+                    color={lineColor}
+                    onChangeComplete={(color) => setLineColor(color.hex)}
+                  />
+                </Box>
+                <Box display="flex" mt="8px">
+                  <Input
+                    placeholder="Add Text..."
+                    value={addTextValue}
+                    onChange={(e) => setAddTextValue(e.target.value)}
+                    variant="flushed"
+                    size="sm"
+                  />
+                  <Icon as={GrFormAdd} w={8} h={8} onClick={addText} />
+                </Box>
+                <Box display="flex" mt="8px">
+                  <Select
+                    // placeholder="Select Canvas Tool"
+                    onChange={handleToolsChange}
+                    variant="flushed"
+                  >
+                    <option value={Tools.Pencil}>Pencil</option>
+                    <option value={Tools.Rectangle}>Rectangle</option>
+                    <option value={Tools.Arrow}>Arrow</option>
+                    <option value={Tools.Circle}>Circle</option>
+                  </Select>
+                </Box>
               </AccordionPanel>
             </AccordionItem>
           </Accordion>

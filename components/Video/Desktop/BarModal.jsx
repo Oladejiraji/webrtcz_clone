@@ -10,7 +10,8 @@ import {
   ModalBody,
   ModalCloseButton,
   Button,
-  Box
+  Box,
+  Input
 } from '@chakra-ui/react';
 import { reduce } from '../../../helper/helper';
 
@@ -59,8 +60,14 @@ const BarModal = (props) => {
           <Box display="flex" justifyContent="center">
             {qr && <QRCode value={qr} size={300} />}
           </Box>
-          <input type="text" onChange={(e) => setManualQr(e.target.value)} />
-          <button onClick={handleSubmit}>submit</button>
+          <Box display="flex" mt="10px">
+            <Input
+              type="text"
+              onChange={(e) => setManualQr(e.target.value)}
+              placeholder="Enter Qr code"
+            />
+            <Button onClick={handleSubmit}>submit</Button>
+          </Box>
         </ModalBody>
         <ModalFooter>
           <Button colorScheme="blue" mr={3} onClick={onClose}>

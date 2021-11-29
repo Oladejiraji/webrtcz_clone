@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Box, Button, Text, Icon } from '@chakra-ui/react';
+import { Box, Button, Text, Icon, Input } from '@chakra-ui/react';
 import dynamic from 'next/dynamic';
 import { FiSettings } from 'react-icons/fi';
 import MobileSpring from './MobileSpring';
 import Peer from 'simple-peer';
 import { expand } from '../../../helper/helper';
-// import SketchField from '../../../sketch_src/components/SketchField/SketchField';
+import { SketchField, Tools } from '../../../react-sketch';
 
 const QrReader = dynamic(() => import('react-qr-scanner'), {
   ssr: false
@@ -14,10 +14,13 @@ const QrReader = dynamic(() => import('react-qr-scanner'), {
 const Mobile = () => {
   const [cameraStream, setCameraStream] = useState(null);
   const cameraRef = useRef();
+  const sketchRef = useRef();
   const [open, setOpen] = useState(false);
   const [delay, setDelay] = useState(100);
   const [result, setResult] = useState('No result');
   const [isQr, setIsQr] = useState(false);
+  const [currTool, setCurrTool] = useState(Tools.Pencil);
+  const [lineColor, setLineColor] = useState('#000');
   const previewStyle = {
     width: '100vw',
     height: '100vh'
@@ -97,7 +100,14 @@ const Mobile = () => {
         </Button>
       )}
       {isQr && (
-        <Box w="100vw" h="100vh" justifyContent="center" alignItems="center">
+        <Box
+          w="100%"
+          h="100%"
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          bg="#fff"
+        >
           {/* <QrReader
             delay={delay}
             style={previewStyle}
@@ -105,18 +115,32 @@ const Mobile = () => {
             onScan={handleScan}
           />
           <Text color="white">{result}</Text> */}
-          <input type="text" onChange={(e) => setManualQr(e.target.value)} />
-          <button onClick={handleSubmit}>submit</button>
+          <Input
+            type="text"
+            onChange={(e) => setManualQr(e.target.value)}
+            placeholder="Enter Qr object"
+          />
+          <Button colorScheme="teal" onClick={handleSubmit}>
+            submit
+          </Button>
           {/* <SketchField
-          width="1024px"
-          height="768px"
-          tool={Tools.Pencil}
-          lineColor="black"
-          lineWidth={3}
+            tool={currTool}
+            lineColor="black"
+            lineWidth={3}
+            ref={sketchRef}
+            lineColor={lineColor}
+            forceValue
           /> */}
         </Box>
       )}
-      <MobileSpring open={open} setOpen={setOpen} />
+      <MobileSpring
+        open={open}
+        setOpen={setOpen}
+        sketchRef={sketchRef}
+        setCurrTool={setCurrTool}
+        lineColor={lineColor}
+        setLineColor={setLineColor}
+      />
     </Box>
   );
 };
