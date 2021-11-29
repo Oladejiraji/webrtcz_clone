@@ -21,6 +21,7 @@ const BarModal = (props) => {
   const [speer, setSpeer] = useState(null);
   const [manualQr, setManualQr] = useState({});
   useEffect(() => {
+    if (!mediaStream && !screenStream) return;
     let streamData = [];
     if (mediaStream && !screenStream) {
       streamData = [mediaStream];
@@ -38,12 +39,13 @@ const BarModal = (props) => {
       const reducedSdp = reduce(data);
       if (reducedSdp !== undefined) {
         console.log(JSON.stringify(data));
-        console.log(reducedSdp);
+        // console.log(reducedSdp);
         setQr(reducedSdp);
       }
     });
+    peer.on('error', (err) => console.log(err));
     peer.on('connect', () => {
-      peer.send('hey');
+      console.log('connected desktop');
     });
     setSpeer(peer);
   }, [mediaStream, screenStream]);

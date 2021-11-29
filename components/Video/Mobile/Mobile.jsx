@@ -40,7 +40,6 @@ const Mobile = () => {
       console.log(stream);
       setCameraStream(stream);
       cameraRef.current.srcObject = stream;
-      console.log(cameraRef.current);
     });
     peer.on('connect', () => console.log('connected'));
     peer.on('error', (err) => console.log(err));
