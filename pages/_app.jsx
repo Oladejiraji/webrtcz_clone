@@ -5,8 +5,6 @@ import '../public/styles/style.css';
 import { ChakraProvider } from '@chakra-ui/react';
 import React from 'react';
 import { Provider } from 'react-redux';
-import Layout from 'components/Layout';
-import { UserContextProvider } from 'utils/useUser';
 import { AppProps } from 'next/app';
 import { store } from '../redux/store';
 
