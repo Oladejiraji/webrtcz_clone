@@ -48,14 +48,24 @@ const SmallCamera = (props) => {
   if (!mediaStream) {
     return null;
   }
+  const handleCancel = (e) => {
+    e.stopPropagation();
+    console.log('cancel');
+  };
 
   return (
     <Measure bounds onResize={handleResize}>
       {({ measureRef }) => (
         <Wrapper>
-          <div className="cancel" onClick={() => setIsCamera(false)}>
+          {/* <div
+            className="cancel"
+            onClick={(e) => {
+              e.stopPropagation();
+              console.log('fe');
+            }}
+          >
             <Icon as={ImCancelCircle} w={30} h={30} />
-          </div>
+          </div> */}
           <Container
             ref={measureRef}
             maxHeight={videoRef.current && videoRef.current.videoHeight}

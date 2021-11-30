@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Box, Button, Text, Icon, Input } from '@chakra-ui/react';
+import { Box, Button, Text, Icon, Input, useToast } from '@chakra-ui/react';
 import dynamic from 'next/dynamic';
 import { FiSettings } from 'react-icons/fi';
 import MobileSpring from './MobileSpring';
@@ -12,6 +12,7 @@ const QrReader = dynamic(() => import('react-qr-scanner'), {
 });
 
 const Mobile = () => {
+  const toast = useToast();
   const [cameraStream, setCameraStream] = useState(null);
   const cameraRef = useRef();
   const sketchRef = useRef();
@@ -21,6 +22,8 @@ const Mobile = () => {
   const [isQr, setIsQr] = useState(false);
   const [currTool, setCurrTool] = useState(Tools.Pencil);
   const [lineColor, setLineColor] = useState('#000');
+  const [isConnect, setIsConnect] = useState(false);
+  const [loadBtn, setLoadBtn] = useState(false);
   const previewStyle = {
     width: '100vw',
     height: '100vh'
@@ -29,6 +32,7 @@ const Mobile = () => {
   const handleSubmit = () => {
     // const decodeExpand = expand(manuaQr);
     // console.log(JSON.parse(decodeExpand));
+    setLoadBtn(true);
     const peer = new Peer({
       initiator: false,
       trickle: false
@@ -41,7 +45,16 @@ const Mobile = () => {
       setCameraStream(stream);
       cameraRef.current.srcObject = stream;
     });
-    peer.on('connect', () => console.log('connected'));
+    peer.on('connect', () => {
+      setIsConnect(true);
+      setLoadBtn(false);
+      toast({
+        description: 'Connected successfully',
+        status: 'success',
+        duration: 9000,
+        isClosable: true
+      });
+    });
     peer.on('error', (err) => console.log(err));
     peer.signal(JSON.parse(manualQr));
   };
@@ -79,7 +92,7 @@ const Mobile = () => {
       h="100vh"
       bg="#000"
     >
-      {cameraStream !== null && (
+      {cameraStream && (
         <div>
           <video
             ref={cameraRef}
@@ -87,6 +100,7 @@ const Mobile = () => {
             playsInline
             muted
             onCanPlay={handlePlay}
+            style={isConnect ? { display: 'block' } : { display: 'none' }}
           ></video>
         </div>
       )}
@@ -98,7 +112,7 @@ const Mobile = () => {
           Scan
         </Button>
       )}
-      {isQr && (
+      {isQr && !isConnect && (
         <Box
           w="100%"
           h="100%"
@@ -114,22 +128,26 @@ const Mobile = () => {
             onScan={handleScan}
           />
           <Text color="white">{result}</Text> */}
-          <Input
+          {/* <Input
             type="text"
             onChange={(e) => setManualQr(e.target.value)}
             placeholder="Enter Qr object"
           />
-          <Button colorScheme="teal" onClick={handleSubmit}>
+          <Button
+            isLoading={loadBtn ? true : false}
+            colorScheme="teal"
+            onClick={handleSubmit}
+          >
             submit
-          </Button>
-          {/* <SketchField
+          </Button> */}
+          <SketchField
             tool={currTool}
             lineColor="black"
             lineWidth={3}
             ref={sketchRef}
             lineColor={lineColor}
             forceValue
-          /> */}
+          />
         </Box>
       )}
       <MobileSpring

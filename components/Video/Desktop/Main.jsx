@@ -21,9 +21,11 @@ const Main = () => {
     console.log('captured');
   };
   const handleScreenStream = (screenStream) => {
+    // console.log(screenStream);
     setScreenStream(screenStream);
   };
   const handleMediaStream = (mediaStream) => {
+    // console.log(mediaStream);
     setMediaStream(mediaStream);
   };
   const style = {
@@ -35,7 +37,7 @@ const Main = () => {
   };
   return (
     <div className="main">
-      {isScreen && !isCamera && (
+      {isScreen && (
         <Screen
           isScreenPlaying={isScreenPlaying}
           setIsScreenPlaying={setIsScreenPlaying}
@@ -68,8 +70,7 @@ const Main = () => {
               x: 0,
               y: 0,
               width: 320,
-              height: 320,
-              borderRadius: '100%'
+              height: 320
             }}
           >
             <SmallCamera
@@ -83,17 +84,6 @@ const Main = () => {
               handleMediaStream={handleMediaStream}
             />
           </Rnd>
-          <Screen
-            isScreenPlaying={isScreenPlaying}
-            setIsScreenPlaying={setIsScreenPlaying}
-            isCanvasEmpty={isCanvasEmpty}
-            setIsCanvasEmpty={setIsCanvasEmpty}
-            onClear={onClear}
-            onCapture={onCapture}
-            isScreen={isScreen}
-            setIsScreen={setIsScreen}
-            handleScreenStream={handleScreenStream}
-          />
         </>
       )}
       <Spring

@@ -11,11 +11,13 @@ import {
   ModalCloseButton,
   Button,
   Box,
-  Input
+  Input,
+  useToast
 } from '@chakra-ui/react';
 import { reduce } from '../../../helper/helper';
 
 const BarModal = (props) => {
+  const toast = useToast();
   const { isOpen, onClose, mediaStream, screenStream } = props;
   const [qr, setQr] = useState(null);
   const [speer, setSpeer] = useState(null);
@@ -38,14 +40,20 @@ const BarModal = (props) => {
     peer.on('signal', (data) => {
       const reducedSdp = reduce(data);
       if (reducedSdp !== undefined) {
-        console.log(JSON.stringify(data));
+        // console.log(JSON.stringify(data));
         // console.log(reducedSdp);
         setQr(reducedSdp);
       }
     });
     peer.on('error', (err) => console.log(err));
     peer.on('connect', () => {
-      console.log('connected desktop');
+      toast({
+        description: 'Connected successfully',
+        status: 'success',
+        duration: 9000,
+        isClosable: true
+      });
+      onClose();
     });
     setSpeer(peer);
   }, [mediaStream, screenStream]);
@@ -62,7 +70,7 @@ const BarModal = (props) => {
           <Box display="flex" justifyContent="center">
             {qr && <QRCode value={qr} size={300} />}
           </Box>
-          <Box display="flex" mt="10px">
+          <Box display="none" mt="10px">
             <Input
               type="text"
               onChange={(e) => setManualQr(e.target.value)}
