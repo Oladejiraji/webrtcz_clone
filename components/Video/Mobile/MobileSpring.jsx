@@ -27,8 +27,9 @@ import { Tools } from '../../../react-sketch';
 import { SketchPicker } from 'react-color';
 
 const options = [
-  { name: 'Phone', value: 'phone' },
-  { name: 'Desktop', value: 'desktop' }
+  { name: 'Choose device type', value: '', key: 1 },
+  { name: 'Phone', value: 'phone', key: 2 },
+  { name: 'Desktop', value: 'desktop', key: 3 }
 ];
 
 const MobileSpring = (props) => {
@@ -38,18 +39,45 @@ const MobileSpring = (props) => {
     sketchRef,
     setCurrTool,
     lineColor,
-    setLineColor
+    setLineColor,
+    selfPhoneStream,
+    setSelfPhoneStream,
+    selfDesktopStream,
+    setSelfDesktopStream
   } = props;
+  const [currStream, setCurrStream] = useState(null);
   const focusRef = useRef();
   const [addTextValue, setAddTextValue] = useState('');
   function onDismiss() {
     setOpen(false);
   }
-  const handleChange = (...args) => {
-    // searchInput.current.querySelector("input").value = "";
-    console.log('ARGS:', args);
-
-    console.log('CHANGE:');
+  const handleChange = async (...args) => {
+    if (args[0] === '') return;
+    // console.log('ARGS:', args);
+    if (currStream) {
+      console.log(args);
+      if (args[0] === 'phone') {
+        setSelfDesktopStream(null);
+        setSelfPhoneStream(currStream);
+      } else if (args[0] === 'desktop') {
+        setSelfDesktopStream(currStream);
+        setSelfPhoneStream(null);
+        console.log('desktop');
+      }
+    } else {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: false,
+        video: { facingMode: 'environment' }
+      });
+      setCurrStream(stream);
+      if (args[0] === 'phone') {
+        setSelfDesktopStream(null);
+        setSelfPhoneStream(stream);
+      } else if (args[0] === 'desktop') {
+        setSelfDesktopStream(stream);
+        setSelfPhoneStream(null);
+      }
+    }
   };
 
   const undo = () => {
@@ -90,18 +118,17 @@ const MobileSpring = (props) => {
           </Box>
         }
       >
-        <Box display="flex" justifyContent="center" mb="10px" mt="10px">
-          <Icon as={BiVideo} w={8} h={8} mr="60px" />
-          <Icon as={AiOutlineAudio} w={8} h={8} />
-        </Box>
         <Box display="flex" justifyContent="center" py="5px" mb="10px">
           <SelectSearch
             options={options}
             value=""
             name="device"
-            placeholder="Choose device type"
             onChange={handleChange}
           />
+        </Box>
+        <Box display="flex" justifyContent="center" mb="10px" mt="10px">
+          <Icon as={BiVideo} w={8} h={8} mr="60px" />
+          <Icon as={AiOutlineAudio} w={8} h={8} />
         </Box>
         <Box>
           <Accordion allowMultiple ref={focusRef}>

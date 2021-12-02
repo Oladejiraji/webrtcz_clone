@@ -5,7 +5,9 @@ import { FiSettings } from 'react-icons/fi';
 import MobileSpring from './MobileSpring';
 import Peer from 'simple-peer';
 import { expand } from '../../../helper/helper';
+import { supabase } from '../../../supabase/supabaseClient';
 import { SketchField, Tools } from '../../../react-sketch';
+import MobileSelector from './MobileSelector';
 
 const QrReader = dynamic(() => import('react-qr-scanner'), {
   ssr: false
@@ -13,7 +15,7 @@ const QrReader = dynamic(() => import('react-qr-scanner'), {
 
 const Mobile = () => {
   const toast = useToast();
-  const [cameraStream, setCameraStream] = useState(null);
+  const [mobileStream, setMobileStream] = useState([]);
   const cameraRef = useRef();
   const sketchRef = useRef();
   const [open, setOpen] = useState(false);
@@ -24,12 +26,35 @@ const Mobile = () => {
   const [lineColor, setLineColor] = useState('#000');
   const [isConnect, setIsConnect] = useState(false);
   const [loadBtn, setLoadBtn] = useState(false);
+  const [streamId, setStreamId] = useState(null);
+  const [cameraStream, setCameraStream] = useState(null);
+  const [screenStream, setScreenStream] = useState(null);
+  const [selfPhoneStream, setSelfPhoneStream] = useState(null);
+  const [selfDesktopStream, setSelfDesktopStream] = useState(null);
   const previewStyle = {
     width: '100vw',
     height: '100vh'
   };
+  // Appending the streams to their ids
+  useEffect(() => {
+    if (streamId && mobileStream.length > 0) {
+      mobileStream.forEach((value) => {
+        streamId.forEach((child) => {
+          if (value.id === child.stream) {
+            if (child.type === 'camera') {
+              setCameraStream(value);
+              console.log(child.type);
+            } else if (child.type === 'screen') {
+              console.log(child.type);
+              setScreenStream(value);
+            }
+          }
+        });
+      });
+    }
+  }, [streamId, mobileStream]);
   const [manualQr, setManualQr] = useState({});
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     // const decodeExpand = expand(manuaQr);
     // console.log(JSON.parse(decodeExpand));
     setLoadBtn(true);
@@ -37,13 +62,15 @@ const Mobile = () => {
       initiator: false,
       trickle: false
     });
+    const { data, error } = await supabase
+      .from('session_info')
+      .select()
+      .eq('id', manualQr);
+    peer.signal(data[0].sdp.peerData);
+    setStreamId(data[0].stream);
+    // if (mobileStream.length > 0) console.log(1);
     peer.on('signal', (data) => {
-      console.log(JSON.stringify(data));
-    });
-    peer.on('stream', (stream) => {
-      console.log(stream);
-      setCameraStream(stream);
-      cameraRef.current.srcObject = stream;
+      updateSdp(data);
     });
     peer.on('connect', () => {
       setIsConnect(true);
@@ -55,25 +82,22 @@ const Mobile = () => {
         isClosable: true
       });
     });
-    peer.on('error', (err) => console.log(err));
-    peer.signal(JSON.parse(manualQr));
+    peer.on('stream', (stream) => {
+      console.log(stream);
+      setMobileStream((prev) => {
+        return [...prev, stream];
+      });
+    });
   };
-  const handlePlay = () => {
-    console.log('play');
-    cameraRef.current.play();
+
+  const updateSdp = async (peerData) => {
+    const { data, error } = await supabase
+      .from('session_info')
+      .update({ sdp: { type: 'answer', peerData } })
+      .eq('id', manualQr);
+    console.log(data);
   };
-  useEffect(() => {
-    // const decoded =
-    //   '';
-    // const decodeExpand = expand(decoded);
-    // console.log(decodeExpand);
-    // const peer = new Peer({
-    //   initiator: false,
-    //   trickle: false
-    // });
-    // peer.on('stream', (stream) => console.log(stream));
-    // peer.signal(decodeExpand);
-  }, []);
+
   const handleScan = (data) => {
     if (data) {
       setResult(data);
@@ -92,21 +116,21 @@ const Mobile = () => {
       h="100vh"
       bg="#000"
     >
-      {cameraStream && (
-        <div>
-          <video
-            ref={cameraRef}
-            autoPlay
-            playsInline
-            muted
-            onCanPlay={handlePlay}
-            style={isConnect ? { display: 'block' } : { display: 'none' }}
-          ></video>
-        </div>
+      {mobileStream.length > 0 && isConnect && (
+        <>
+          <MobileSelector
+            cameraStream={cameraStream}
+            screenStream={screenStream}
+            selfPhoneStream={selfPhoneStream}
+            setSelfPhoneStream={setSelfPhoneStream}
+            selfDesktopStream={selfDesktopStream}
+            setSelfDesktopStream={setSelfDesktopStream}
+          />
+          <button className="openSpring" onClick={() => setOpen(true)}>
+            <Icon as={FiSettings} />
+          </button>
+        </>
       )}
-      <button className="openSpring" onClick={() => setOpen(true)}>
-        <Icon as={FiSettings} />
-      </button>
       {!isQr && (
         <Button colorScheme="teal" onClick={() => setIsQr(true)}>
           Scan
@@ -128,7 +152,7 @@ const Mobile = () => {
             onScan={handleScan}
           />
           <Text color="white">{result}</Text> */}
-          {/* <Input
+          <Input
             type="text"
             onChange={(e) => setManualQr(e.target.value)}
             placeholder="Enter Qr object"
@@ -139,15 +163,15 @@ const Mobile = () => {
             onClick={handleSubmit}
           >
             submit
-          </Button> */}
-          <SketchField
+          </Button>
+          {/* <SketchField
             tool={currTool}
             lineColor="black"
             lineWidth={3}
             ref={sketchRef}
             lineColor={lineColor}
             forceValue
-          />
+          /> */}
         </Box>
       )}
       <MobileSpring
@@ -157,6 +181,10 @@ const Mobile = () => {
         setCurrTool={setCurrTool}
         lineColor={lineColor}
         setLineColor={setLineColor}
+        selfPhoneStream={selfPhoneStream}
+        setSelfPhoneStream={setSelfPhoneStream}
+        selfDesktopStream={selfDesktopStream}
+        setSelfDesktopStream={setSelfDesktopStream}
       />
     </Box>
   );

@@ -21,6 +21,7 @@ const Spring = (props) => {
   } = props;
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [open, setOpen] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
   const toast = useToast();
   function onDismiss() {
     setOpen(false);
@@ -28,6 +29,7 @@ const Spring = (props) => {
   const openBarModal = () => {
     if ((mediaStream || screenStream) && (isScreen || isCamera)) {
       setOpen(false);
+      // setOpenModal(!openModal);
       setTimeout(() => {
         onOpen();
       }, 100);
