@@ -24,41 +24,7 @@ const BarModal = (props) => {
   const [speer, setSpeer] = useState(null);
   const [manualQr, setManualQr] = useState({});
   const [sessionId, setSessionId] = useState(null);
-  useEffect(() => {
-    // if (!mediaStream && !screenStream) return;
-    // let streamData = [];
-    // if (mediaStream && !screenStream) {
-    //   streamData = [mediaStream];
-    // } else if (!mediaStream && screenStream) {
-    //   streamData = [screenStream];
-    // } else if (mediaStream && screenStream) {
-    //   streamData = [mediaStream, screenStream];
-    // }
-    // const peer = new Peer({
-    //   initiator: true,
-    //   trickle: true,
-    //   streams: streamData
-    // });
-    // peer.on('signal', (data) => {
-    //   const reducedSdp = reduce(data);
-    //   if (reducedSdp !== undefined) {
-    //     // console.log(JSON.stringify(data));
-    //     // console.log(reducedSdp);
-    //     setQr(reducedSdp);
-    //   }
-    // });
-    // peer.on('error', (err) => console.log(err));
-    // peer.on('connect', () => {
-    //   toast({
-    //     description: 'Connected successfully',
-    //     status: 'success',
-    //     duration: 9000,
-    //     isClosable: true
-    //   });
-    //   onClose();
-    // });
-    // setSpeer(peer);
-  }, [mediaStream, screenStream]);
+
   const handleSubmit = () => {
     speer.signal(JSON.parse(manualQr));
   };

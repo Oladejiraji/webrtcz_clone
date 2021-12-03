@@ -8,7 +8,8 @@ const MobileSelector = (props) => {
     selfPhoneStream,
     setSelfPhoneStream,
     selfDesktopStream,
-    setSelfDesktopStream
+    setSelfDesktopStream,
+    showRear
   } = props;
   const cameraRef = useRef();
   const smallCameraRef = useRef();

@@ -31,6 +31,7 @@ const Mobile = () => {
   const [screenStream, setScreenStream] = useState(null);
   const [selfPhoneStream, setSelfPhoneStream] = useState(null);
   const [selfDesktopStream, setSelfDesktopStream] = useState(null);
+  const [showRear, setShowRear] = useState(false);
   const previewStyle = {
     width: '100vw',
     height: '100vh'
@@ -98,9 +99,39 @@ const Mobile = () => {
     console.log(data);
   };
 
-  const handleScan = (data) => {
-    if (data) {
-      setResult(data);
+  const handleScan = async (qrData) => {
+    setResult(qrData);
+    if (result && result !== 'No result') {
+      const peer = new Peer({
+        initiator: false,
+        trickle: false
+      });
+      const { data, error } = await supabase
+        .from('session_info')
+        .select()
+        .eq('id', qrData);
+      peer.signal(data[0].sdp.peerData);
+      setStreamId(data[0].stream);
+      // if (mobileStream.length > 0) console.log(1);
+      peer.on('signal', (data) => {
+        updateSdp(data);
+      });
+      peer.on('connect', () => {
+        setIsConnect(true);
+        setLoadBtn(false);
+        toast({
+          description: 'Connected successfully',
+          status: 'success',
+          duration: 9000,
+          isClosable: true
+        });
+      });
+      peer.on('stream', (stream) => {
+        console.log(stream);
+        setMobileStream((prev) => {
+          return [...prev, stream];
+        });
+      });
     }
   };
   const handleError = (err) => {
@@ -125,6 +156,7 @@ const Mobile = () => {
             setSelfPhoneStream={setSelfPhoneStream}
             selfDesktopStream={selfDesktopStream}
             setSelfDesktopStream={setSelfDesktopStream}
+            showRear={showRear}
           />
           <button className="openSpring" onClick={() => setOpen(true)}>
             <Icon as={FiSettings} />
@@ -145,13 +177,15 @@ const Mobile = () => {
           alignItems="center"
           bg="#fff"
         >
-          {/* <QrReader
-            delay={delay}
-            style={previewStyle}
-            onError={handleError}
-            onScan={handleScan}
-          />
-          <Text color="white">{result}</Text> */}
+          {/* <Box w="100vw" h="100%">
+            <QrReader
+              delay={delay}
+              style={previewStyle}
+              onError={handleError}
+              onScan={handleScan}
+            />
+            <Text color="white">{result}</Text>
+          </Box> */}
           <Input
             type="text"
             onChange={(e) => setManualQr(e.target.value)}
@@ -185,6 +219,9 @@ const Mobile = () => {
         setSelfPhoneStream={setSelfPhoneStream}
         selfDesktopStream={selfDesktopStream}
         setSelfDesktopStream={setSelfDesktopStream}
+        streamId={streamId}
+        showRear={showRear}
+        setShowRear={setShowRear}
       />
     </Box>
   );

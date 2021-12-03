@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import {
   Button,
   Text,
@@ -16,11 +16,14 @@ import {
 import SelectSearch from 'react-select-search';
 import { BottomSheet } from 'react-spring-bottom-sheet';
 import { BiVideo } from 'react-icons/bi';
+import { BiVideoOff } from 'react-icons/bi';
 import { AiOutlineAudio } from 'react-icons/ai';
 import { BsFillPenFill } from 'react-icons/bs';
+import { BiMicrophoneOff } from 'react-icons/bi';
 import { VscDebugDisconnect } from 'react-icons/vsc';
 import { BiUndo } from 'react-icons/bi';
 import { BiRedo } from 'react-icons/bi';
+import { HiOutlineSwitchHorizontal } from 'react-icons/hi';
 import { MdClear } from 'react-icons/md';
 import { GrFormAdd } from 'react-icons/gr';
 import { Tools } from '../../../react-sketch';
@@ -43,11 +46,28 @@ const MobileSpring = (props) => {
     selfPhoneStream,
     setSelfPhoneStream,
     selfDesktopStream,
-    setSelfDesktopStream
+    setSelfDesktopStream,
+    streamId,
+    showRear,
+    setShowRear
   } = props;
   const [currStream, setCurrStream] = useState(null);
   const focusRef = useRef();
   const [addTextValue, setAddTextValue] = useState('');
+  const [isProjector, setIsProjector] = useState(false);
+  const [streamOpt, setStreamOpt] = useState({
+    audio: false,
+    video: { facingMode: 'environment' }
+  });
+  useEffect(() => {
+    if (streamId) {
+      streamId.forEach((value) => {
+        if (value.type === 'screen') {
+          setIsProjector(true);
+        }
+      });
+    }
+  }, [streamId]);
   function onDismiss() {
     setOpen(false);
   }
@@ -65,10 +85,7 @@ const MobileSpring = (props) => {
         console.log('desktop');
       }
     } else {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: false,
-        video: { facingMode: 'environment' }
-      });
+      const stream = await navigator.mediaDevices.getUserMedia(streamOpt);
       setCurrStream(stream);
       if (args[0] === 'phone') {
         setSelfDesktopStream(null);
@@ -103,6 +120,12 @@ const MobileSpring = (props) => {
   const handleColorChange = (color) => {
     setLineColor();
   };
+
+  const toggleAudio = () => {
+    setStreamOpt((prev) => {
+      return { ...prev, audio: !prev.audio };
+    });
+  };
   return (
     <Box>
       <BottomSheet
@@ -127,8 +150,32 @@ const MobileSpring = (props) => {
           />
         </Box>
         <Box display="flex" justifyContent="center" mb="10px" mt="10px">
-          <Icon as={BiVideo} w={8} h={8} mr="60px" />
-          <Icon as={AiOutlineAudio} w={8} h={8} />
+          {isProjector && (
+            <>
+              {showRear ? (
+                <Icon
+                  as={BiVideoOff}
+                  w={8}
+                  h={8}
+                  mr="60px"
+                  onClick={() => setShowRear(!showRear)}
+                />
+              ) : (
+                <Icon
+                  as={BiVideo}
+                  w={8}
+                  h={8}
+                  mr="60px"
+                  onClick={() => setShowRear(!showRear)}
+                />
+              )}
+            </>
+          )}
+          {streamOpt.audio ? (
+            <Icon as={BiMicrophoneOff} w={8} h={8} onClick={toggleAudio} />
+          ) : (
+            <Icon as={AiOutlineAudio} w={8} h={8} onClick={toggleAudio} />
+          )}
         </Box>
         <Box>
           <Accordion allowMultiple ref={focusRef}>

@@ -36,7 +36,7 @@
   overflow: hidden;
   border: none !important;
   background: none !important;
-  z-index: 1000;
+  z-index: 3;
 }
 
 .rnd_wrap {
