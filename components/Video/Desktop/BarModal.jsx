@@ -75,7 +75,8 @@ const BarModal = (props) => {
       initiator: true,
       trickle: false,
       streams: streamData,
-      objectMode: true
+      objectMode: true,
+      answerOptions: { offerToReceiveAudio: true, offerToReceiveVideo: true }
     });
     peer.on('signal', (peerData) => {
       insertSdp(peerData, peer, streamId);

@@ -92,7 +92,8 @@ const Mobile = () => {
       initiator: false,
       trickle: false,
       streams: streamData,
-      objectMode: true
+      objectMode: true,
+      offerOptions: { offerToReceiveAudio: true, offerToReceiveVideo: true }
     });
 
     const { data, error } = await supabase
