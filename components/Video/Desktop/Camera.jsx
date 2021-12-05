@@ -4,7 +4,7 @@ import { useUserMedia, useCardRatio } from '../../../Hooks';
 import { Video, Wrapper, Container } from './styles';
 
 const CAPTURE_OPTIONS = {
-  audio: false,
+  audio: true,
   video: { facingMode: 'environment' }
 };
 

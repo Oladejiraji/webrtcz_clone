@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Rnd } from 'react-rnd';
 import Spring from './Spring';
 import Camera from './Camera';
@@ -13,6 +13,28 @@ const Main = () => {
   const [isCanvasEmpty, setIsCanvasEmpty] = useState(true);
   const [screenStream, setScreenStream] = useState(null);
   const [mediaStream, setMediaStream] = useState(null);
+  const [remoteStream, setRemoteStream] = useState(null);
+  const [canvasStream, setCanvasStream] = useState(null);
+  const [activeRemoteStream, setActiveRemoteStream] = useState(false);
+  const remoteRef = useRef();
+
+  useEffect(() => {
+    if (remoteStream && activeRemoteStream) {
+      remoteRef.current.srcObject = remoteStream;
+    }
+  }, [remoteStream, activeRemoteStream]);
+
+  const handleRemoteStream = (stream) => {
+    if (stream !== undefined) {
+      setRemoteStream(stream);
+    }
+  };
+
+  const handleCanvasStream = (stream) => {
+    if (stream !== undefined) {
+      setCanvasStream(stream);
+    }
+  };
 
   const onClear = () => {
     console.log('cleared');
@@ -37,6 +59,26 @@ const Main = () => {
   };
   return (
     <div className="main">
+      {remoteStream && activeRemoteStream && (
+        <Rnd
+          onResize={null}
+          style={style}
+          default={{
+            x: 400,
+            y: 0,
+            width: 240,
+            height: 240
+          }}
+        >
+          <video
+            className="small_mob_video"
+            ref={remoteRef}
+            autoPlay
+            playsInline
+            muted
+          ></video>
+        </Rnd>
+      )}
       {isScreen && (
         <Screen
           isScreenPlaying={isScreenPlaying}
@@ -95,6 +137,9 @@ const Main = () => {
         setIsScreen={setIsScreen}
         screenStream={screenStream}
         mediaStream={mediaStream}
+        handleRemoteStream={handleRemoteStream}
+        setActiveRemoteStream={setActiveRemoteStream}
+        handleCanvasStream={handleCanvasStream}
       />
     </div>
   );

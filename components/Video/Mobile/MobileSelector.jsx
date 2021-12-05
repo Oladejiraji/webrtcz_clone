@@ -9,7 +9,8 @@ const MobileSelector = (props) => {
     setSelfPhoneStream,
     selfDesktopStream,
     setSelfDesktopStream,
-    showRear
+    showRear,
+    currStream
   } = props;
   const cameraRef = useRef();
   const smallCameraRef = useRef();
@@ -20,17 +21,26 @@ const MobileSelector = (props) => {
     if (cameraStream && !screenStream && !selfDesktopStream) {
       cameraRef.current.srcObject = cameraStream;
     } else if (!cameraStream && screenStream && !selfDesktopStream) {
-      cameraRef.current.srcObject = screenStream;
+      if (showRear) {
+        cameraRef.current.srcObject = currStream;
+      } else {
+        cameraRef.current.srcObject = screenStream;
+      }
     } else if (cameraStream && screenStream) {
-      smallCameraRef.current.srcObject = cameraStream;
-      screenRef.current.srcObject = screenStream;
+      if (showRear) {
+        smallCameraRef.current.srcObject = cameraStream;
+        screenRef.current.srcObject = currStream;
+      } else {
+        smallCameraRef.current.srcObject = cameraStream;
+        screenRef.current.srcObject = screenStream;
+      }
     }
-    if (selfPhoneStream && !selfDesktopStream) {
+    if (selfPhoneStream && !selfDesktopStream && !showRear) {
       smallSelf.current.srcObject = selfPhoneStream;
     } else if (!selfPhoneStream && selfDesktopStream) {
       bigSelf.current.srcObject = selfDesktopStream;
     }
-  }, [cameraStream, screenStream, selfPhoneStream]);
+  }, [cameraStream, screenStream, selfPhoneStream, showRear, currStream]);
   const style = {
     display: 'flex',
     alignItems: 'center',
@@ -40,7 +50,7 @@ const MobileSelector = (props) => {
   };
   return (
     <>
-      {selfPhoneStream && (
+      {selfPhoneStream && !showRear && (
         <Rnd
           onResize={null}
           style={style}
@@ -107,18 +117,15 @@ const MobileSelector = (props) => {
           muted
         ></video>
       )}
-      {!cameraStream &&
-        screenStream &&
-        !selfDesktopStream &&
-        !selfDesktopStream && (
-          <video
-            className="mob_video"
-            ref={cameraRef}
-            autoPlay
-            playsInline
-            muted
-          ></video>
-        )}
+      {!cameraStream && screenStream && !selfDesktopStream && (
+        <video
+          className="mob_video"
+          ref={cameraRef}
+          autoPlay
+          playsInline
+          muted
+        ></video>
+      )}
     </>
   );
 };

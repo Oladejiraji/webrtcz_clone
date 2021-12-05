@@ -19,15 +19,40 @@ import { supabase } from '../../../supabase/supabaseClient';
 
 const BarModal = (props) => {
   const toast = useToast();
-  const { isOpen, onClose, mediaStream, screenStream } = props;
+  const {
+    isOpen,
+    onClose,
+    mediaStream,
+    screenStream,
+    handleRemoteStream,
+    setActiveRemoteStream,
+    handleCanvasStream
+  } = props;
   const [qr, setQr] = useState(null);
   const [speer, setSpeer] = useState(null);
   const [manualQr, setManualQr] = useState({});
   const [sessionId, setSessionId] = useState(null);
+  const [desktopStream, setDesktopStream] = useState([]);
+  const [resStreamId, setResStreamId] = useState(null);
 
-  const handleSubmit = () => {
-    speer.signal(JSON.parse(manualQr));
-  };
+  useEffect(() => {
+    if (resStreamId && desktopStream.length > 0) {
+      desktopStream.forEach((value) => {
+        resStreamId.forEach((child) => {
+          if (value.id === child.stream) {
+            if (child.type === 'camera') {
+              handleRemoteStream(value);
+              console.log(child.type);
+            } else if (child.type === 'canvas') {
+              console.log(child.type);
+              handleCanvasStream(value);
+            }
+          }
+        });
+      });
+    }
+  }, [resStreamId, desktopStream]);
+
   const generateQr = () => {
     if (!mediaStream && !screenStream) return;
     let streamData = [];
@@ -45,10 +70,12 @@ const BarModal = (props) => {
         { type: 'screen', stream: screenStream.id }
       ];
     }
+    console.log(streamData);
     const peer = new Peer({
       initiator: true,
       trickle: false,
-      streams: streamData
+      streams: streamData,
+      objectMode: true
     });
     peer.on('signal', (peerData) => {
       insertSdp(peerData, peer, streamId);
@@ -62,13 +89,27 @@ const BarModal = (props) => {
       });
       onClose();
     });
+    peer.on('stream', (stream) => {
+      console.log(stream);
+      setDesktopStream((prev) => {
+        return [...prev, stream];
+      });
+    });
+    peer.on('data', (data) => {
+      if (data === 'conn') {
+        setActiveRemoteStream(true);
+      }
+    });
+    console.log(streamData);
+    peer.on('error', (err) => {
+      console.log(err);
+    });
   };
 
   const insertSdp = async (peerData, peer, streamId) => {
     const { data, error } = await supabase
       .from('session_info')
       .insert([{ sdp: { type: 'offer', peerData }, stream: streamId }]);
-    // console.log(data);
     setSessionId(data[0].id);
     console.log(data[0].id);
     // Get sdp answer from db
@@ -77,10 +118,15 @@ const BarModal = (props) => {
         .from('session_info')
         .select()
         .eq('id', data[0].id);
-      // console.log(secondData);
-      if (secondData[0].sdp.type === 'answer') {
+      console.log(secondData[0].sdp.resStream);
+      if (
+        secondData[0].sdp.type === 'answer' &&
+        secondData[0].resStream.length > 0
+      ) {
         clearInterval(sdpInt);
+        console.log(secondData[0]);
         peer.signal(secondData[0].sdp.peerData);
+        setResStreamId(secondData[0].resStream);
         console.log(true);
       } else {
         console.log(false);
