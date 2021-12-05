@@ -124,7 +124,7 @@ const BarModal = (props) => {
         secondData[0].resStream.length > 0
       ) {
         clearInterval(sdpInt);
-        console.log(secondData[0]);
+        console.log(secondData[0].sdp.peerData);
         peer.signal(secondData[0].sdp.peerData);
         setResStreamId(secondData[0].resStream);
         console.log(true);
