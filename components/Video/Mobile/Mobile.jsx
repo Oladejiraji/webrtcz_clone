@@ -85,9 +85,9 @@ const Mobile = () => {
     const myCanStream = sketchRef.current._canvas.captureStream(25);
     setCanvasStream(myCanStream);
     updateResId(myStream, myCanStream);
-    const streamData = [myStream, myCanStream];
-    console.log(streamData);
+    const streamData = [myCanStream];
 
+    console.log(streamData);
     const peer = new Peer({
       initiator: false,
       trickle: false,
@@ -95,6 +95,8 @@ const Mobile = () => {
       objectMode: true,
       offerOptions: { offerToReceiveAudio: true, offerToReceiveVideo: true }
     });
+    peer.addTransceiver(myStream);
+    peer.addStream(myStream);
 
     const { data, error } = await supabase
       .from('session_info')
