@@ -4,6 +4,7 @@ import Spring from './Spring';
 import Camera from './Camera';
 import Screen from './Screen';
 import SmallCamera from './SmallCamera';
+import { Box } from '@chakra-ui/react';
 
 const Main = () => {
   const [isCamera, setIsCamera] = useState(false);
@@ -16,11 +17,16 @@ const Main = () => {
   const [remoteStream, setRemoteStream] = useState(null);
   const [canvasStream, setCanvasStream] = useState(null);
   const [activeRemoteStream, setActiveRemoteStream] = useState(false);
+  const [activeRemoteCanvas, setActiveRemoteCanvas] = useState(false);
   const remoteRef = useRef();
+  const canvasRef = useRef();
 
   useEffect(() => {
     if (remoteStream && activeRemoteStream) {
       remoteRef.current.srcObject = remoteStream;
+    }
+    if (canvasStream && activeRemoteCanvas) {
+      canvasRef.current.srcObject = canvasStream;
     }
   }, [remoteStream, activeRemoteStream]);
 
@@ -59,6 +65,25 @@ const Main = () => {
   };
   return (
     <div className="main">
+      {canvasStream && activeRemoteCanvas && (
+        <Box
+          pos="absolute"
+          top="0"
+          lef="0"
+          w="100vw"
+          h="100vh"
+          zIndex="10000000"
+        >
+          <video
+            className="mob_canvas"
+            ref={canvasRef}
+            autoPlay
+            playsInline
+            muted
+            onCanPlay={() => console.log('plau')}
+          ></video>
+        </Box>
+      )}
       {remoteStream && activeRemoteStream && (
         <Rnd
           onResize={null}
@@ -140,6 +165,7 @@ const Main = () => {
         handleRemoteStream={handleRemoteStream}
         setActiveRemoteStream={setActiveRemoteStream}
         handleCanvasStream={handleCanvasStream}
+        setActiveRemoteCanvas={setActiveRemoteCanvas}
       />
     </div>
   );

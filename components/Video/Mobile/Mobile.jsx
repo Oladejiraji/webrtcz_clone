@@ -66,7 +66,6 @@ const Mobile = () => {
   useEffect(() => {
     if (selfPhoneStream || selfDesktopStream || showRear) {
       if (!actRemotePeer) {
-        console.log('cdcd');
         speer.send('conn');
         setActRemotePeer(true);
       }
@@ -82,10 +81,12 @@ const Mobile = () => {
       video: { facingMode: 'environment' }
     });
     setCurrStream(myStream);
-    const myCanStream = sketchRef.current._canvas.captureStream(25);
+    const myCanStream = document
+      .querySelector('.upper-canvas')
+      .captureStream(25);
     setCanvasStream(myCanStream);
     updateResId(myStream, myCanStream);
-    const streamData = [myCanStream];
+    const streamData = [myStream, myCanStream];
 
     console.log(streamData);
     const peer = new Peer({
@@ -95,8 +96,8 @@ const Mobile = () => {
       objectMode: true,
       offerOptions: { offerToReceiveAudio: true, offerToReceiveVideo: true }
     });
-    peer.addTransceiver(myStream);
-    peer.addStream(myStream);
+    peer.addTransceiver('video', undefined);
+    // peer.addStream(myCanStream);
 
     const { data, error } = await supabase
       .from('session_info')
@@ -215,23 +216,19 @@ const Mobile = () => {
           />
         </>
       )}
-      <Box
-        display={isPen ? 'flex' : 'none'}
-        justifyContent="center"
-        alignItems="center"
-        w="100vw"
-        h="100vh"
-        bg="#fff"
-      >
-        <SketchField
-          tool={currTool}
-          lineColor="black"
-          lineWidth={3}
-          ref={sketchRef}
-          lineColor={lineColor}
-          forceValue
-        />
-      </Box>
+      {isQr && (
+        <span style={isPen ? { display: 'block' } : { display: 'none' }}>
+          <SketchField
+            tool={currTool}
+            lineColor="black"
+            lineWidth={3}
+            width={500}
+            height={500}
+            ref={sketchRef}
+            lineColor={lineColor}
+          />
+        </span>
+      )}
       <button className="openSpring" onClick={() => setOpen(true)}>
         <Icon as={FiSettings} />
       </button>
@@ -270,6 +267,17 @@ const Mobile = () => {
           >
             submit
           </Button>
+          {/* {isQr && (
+            <span style={{ display: 'block' }}>
+              <SketchField
+                tool={currTool}
+                lineColor="black"
+                lineWidth={3}
+                ref={sketchRef}
+                lineColor={lineColor}
+              />
+            </span>
+          )} */}
         </Box>
       )}
       <MobileSpring

@@ -26,7 +26,10 @@ const BarModal = (props) => {
     screenStream,
     handleRemoteStream,
     setActiveRemoteStream,
-    handleCanvasStream
+    handleCanvasStream,
+    setActiveRemoteCanvas,
+    isScreen,
+    isCamera
   } = props;
   const [qr, setQr] = useState(null);
   const [speer, setSpeer] = useState(null);
@@ -54,16 +57,19 @@ const BarModal = (props) => {
   }, [resStreamId, desktopStream]);
 
   const generateQr = () => {
-    if (!mediaStream && !screenStream) return;
+    if (!mediaStream && !screenStream && !isScreen && !isCamera) return;
     let streamData = [];
     let streamId = [];
-    if (mediaStream && !screenStream) {
+    if (isCamera && !isScree) {
+      consoel.log(1);
       streamData = [mediaStream];
       streamId = [{ type: 'camera', stream: mediaStream.id }];
-    } else if (!mediaStream && screenStream) {
+    } else if (isScreen && !isCamera) {
+      console.log(2);
       streamData = [screenStream];
       streamId = [{ type: 'screen', stream: screenStream.id }];
-    } else if (mediaStream && screenStream) {
+    } else if (isScreen && isCamera) {
+      console.log(3);
       streamData = [mediaStream, screenStream];
       streamId = [
         { type: 'camera', stream: mediaStream.id },
@@ -78,6 +84,7 @@ const BarModal = (props) => {
       objectMode: true,
       answerOptions: { offerToReceiveAudio: true, offerToReceiveVideo: true }
     });
+    peer.addTransceiver('video', undefined);
     peer.on('signal', (peerData) => {
       insertSdp(peerData, peer, streamId);
     });
@@ -97,9 +104,10 @@ const BarModal = (props) => {
       });
     });
     peer.on('data', (data) => {
-      if (data === 'conn') {
-        setActiveRemoteStream(true);
-      }
+      console.log(data);
+      if (data === 'conn') setActiveRemoteStream(true);
+      if (data === 'truePen') setActiveRemoteCanvas(true);
+      if (data === 'falsePen') setActiveRemoteCanvas(false);
     });
     console.log(streamData);
     peer.on('error', (err) => {

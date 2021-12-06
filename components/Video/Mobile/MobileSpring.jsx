@@ -179,6 +179,17 @@ const MobileSpring = (props) => {
       setSelfPhoneStream(null);
     }
   };
+
+  const togglePen = () => {
+    setIsPen(!isPen);
+    if (isPen === false) {
+      console.log(false);
+      speer.send('truePen');
+    } else if (isPen === true) {
+      console.log(true);
+      speer.send('falsePen');
+    }
+  };
   return (
     <Box>
       <BottomSheet
@@ -238,13 +249,7 @@ const MobileSpring = (props) => {
           ) : (
             <Icon as={AiOutlineAudio} w={8} h={8} onClick={toggleAudio} />
           )}
-          <Icon
-            as={BsPen}
-            w={8}
-            h={8}
-            ml="60px"
-            onClick={() => setIsPen(!isPen)}
-          />
+          <Icon as={BsPen} w={8} h={8} ml="60px" onClick={togglePen} />
         </Box>
         <Box>
           {isPen && (

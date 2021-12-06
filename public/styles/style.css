@@ -184,3 +184,7 @@
   height: 100%;
   width: 100%;
 }
+
+.mob_canvas {
+  background-color: #fff;
+}

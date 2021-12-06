@@ -20,7 +20,8 @@ const Spring = (props) => {
     mediaStream,
     handleRemoteStream,
     setActiveRemoteStream,
-    handleCanvasStream
+    handleCanvasStream,
+    setActiveRemoteCanvas
   } = props;
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [open, setOpen] = useState(false);
@@ -99,6 +100,9 @@ const Spring = (props) => {
         handleRemoteStream={handleRemoteStream}
         setActiveRemoteStream={setActiveRemoteStream}
         handleCanvasStream={handleCanvasStream}
+        setActiveRemoteCanvas={setActiveRemoteCanvas}
+        isScreen={isScreen}
+        isCamera={isCamera}
       />
     </div>
   );
