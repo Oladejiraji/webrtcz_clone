@@ -108,11 +108,17 @@ const BarModal = (props) => {
       if (data === 'conn') setActiveRemoteStream(true);
       if (data === 'truePen') setActiveRemoteCanvas(true);
       if (data === 'falsePen') setActiveRemoteCanvas(false);
+      if (data === 'close-conn') closePeer();
     });
     console.log(streamData);
     peer.on('error', (err) => {
       console.log(err);
     });
+  };
+
+  const closePeer = () => {
+    console.log('deji');
+    setSessionId(null);
   };
 
   const insertSdp = async (peerData, peer, streamId) => {

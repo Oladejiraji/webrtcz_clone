@@ -56,7 +56,9 @@ const MobileSpring = (props) => {
     selectValue,
     speer,
     isPen,
-    setIsPen
+    setIsPen,
+    setIsConnect,
+    setIsQr
   } = props;
   const focusRef = useRef();
   const [addTextValue, setAddTextValue] = useState('');
@@ -190,6 +192,13 @@ const MobileSpring = (props) => {
       speer.send('falsePen');
     }
   };
+
+  const closePeer = () => {
+    speer.send('close-conn');
+    setIsConnect(false);
+    setIsQr(false);
+    speer.destroy('close-conn');
+  };
   return (
     <Box>
       <BottomSheet
@@ -199,7 +208,7 @@ const MobileSpring = (props) => {
         snapPoints={({ maxHeight }) => maxHeight / 2}
         footer={
           <Box textAlign="center">
-            <Button onClick={(err) => speer.destroy([err])} className="w-full">
+            <Button onClick={closePeer} className="w-full">
               <Icon as={VscDebugDisconnect} w={8} h={8} color="red" />
             </Button>
           </Box>

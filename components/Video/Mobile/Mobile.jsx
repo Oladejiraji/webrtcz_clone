@@ -128,7 +128,7 @@ const Mobile = () => {
       });
     });
     setSpeer(peer);
-    peer.on('err', (err) => {
+    peer.on('error', (err) => {
       console.log(err);
     });
     console.log('fhrhfhrhfhrh');
@@ -301,6 +301,8 @@ const Mobile = () => {
         speer={speer}
         isPen={isPen}
         setIsPen={setIsPen}
+        setIsConnect={setIsConnect}
+        setIsQr={setIsQr}
       />
     </Box>
   );
