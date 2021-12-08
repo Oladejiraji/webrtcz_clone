@@ -86,6 +86,7 @@ const BarModal = (props) => {
     });
     peer.addTransceiver('video', undefined);
     peer.on('signal', (peerData) => {
+      console.log(peerData);
       insertSdp(peerData, peer, streamId);
     });
     peer.on('connect', () => {

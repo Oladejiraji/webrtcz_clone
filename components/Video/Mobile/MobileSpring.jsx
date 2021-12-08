@@ -121,21 +121,22 @@ const MobileSpring = (props) => {
   };
 
   const toggleAudio = async () => {
-    // setStreamOpt((prev) => {
-    //   return { ...prev, audio: !prev.audio };
-    // });
-    // const stream = await navigator.mediaDevices.getUserMedia({
-    //   audio: !streamOpt.audio,
-    //   video: { facingMode: 'user' }
-    // });
-    // setCurrStream(stream);
-    // streamDecision(stream);
-    // const copyCurrStream = currStream;
-    // copyCurrStream.getAudioTracks()[0].enabled = !copyCurrStream.getAudioTracks()[0]
-    //   .enabled;
-    // setCurrStream(copyCurrStream);
-    // streamDecision(copyCurrStream);
-    // console.log(currStream.getTracks()[0].getSettings());
+    const audio = currStream.getAudioTracks()[0];
+    if (!audio) {
+      const myStream = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+        video: { facingMode: 'environment' }
+      });
+      speer.addTrack(myStream.getAudioTracks()[0], currStream);
+      console.log('d');
+    } else {
+      console.log('d');
+      speer.removeTrack(currStream.getAudioTracks()[0], currStream);
+    }
+  };
+
+  const switchCamera = async () => {
+    console.log(currStream.getAudioTracks()[0]);
   };
 
   const toggleShowRear = async () => {
@@ -145,30 +146,6 @@ const MobileSpring = (props) => {
       setShowRear(true);
       const stream = await navigator.mediaDevices.getUserMedia(streamOpt);
       setCurrStream(stream);
-    }
-  };
-
-  const switchCamera = async () => {
-    if (streamOpt.video.facingMode === 'environment') {
-      setStreamOpt((prev) => {
-        return { ...prev, video: { facingMode: 'user' } };
-      });
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: false,
-        video: { facingMode: 'user' }
-      });
-      setCurrStream(stream);
-      streamDecision(stream);
-    } else if (streamOpt.video.facingMode === 'user') {
-      setStreamOpt((prev) => {
-        return { ...prev, video: { facingMode: 'environment' } };
-      });
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: false,
-        video: { facingMode: 'environment' }
-      });
-      setCurrStream(stream);
-      streamDecision(stream);
     }
   };
 

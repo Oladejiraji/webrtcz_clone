@@ -26,9 +26,10 @@ const Main = () => {
       remoteRef.current.srcObject = remoteStream;
     }
     if (canvasStream && activeRemoteCanvas) {
+      console.log(canvasStream);
       canvasRef.current.srcObject = canvasStream;
     }
-  }, [remoteStream, activeRemoteStream]);
+  }, [remoteStream, activeRemoteStream, canvasStream, activeRemoteCanvas]);
 
   const handleRemoteStream = (stream) => {
     if (stream !== undefined) {

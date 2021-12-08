@@ -32,6 +32,22 @@
   border-radius: 5px;
 }
 
+.openSpringPrime {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  cursor: pointer;
+  border: none;
+  padding: 0.5rem 1.2rem;
+  font-size: 1.5rem;
+  font-weight: 400;
+  background-color: teal;
+  color: #fff;
+  border-radius: 5px;
+  z-index: 10000;
+}
+
 .react-draggable {
   overflow: hidden;
   border: none !important;
@@ -187,4 +203,6 @@
 
 .mob_canvas {
   background-color: #fff;
+  width: 100vw;
+  height: 100%;
 }

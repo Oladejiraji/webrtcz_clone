@@ -77,16 +77,14 @@ const Mobile = () => {
     // console.log(JSON.parse(decodeExpand));
     setLoadBtn(true);
     const myStream = await navigator.mediaDevices.getUserMedia({
-      audio: false,
+      audio: true,
       video: { facingMode: 'environment' }
     });
     setCurrStream(myStream);
-    const myCanStream = document
-      .querySelector('.upper-canvas')
-      .captureStream(25);
+    const myCanStream = document.querySelector('.lower-canvas').captureStream();
     setCanvasStream(myCanStream);
     updateResId(myStream, myCanStream);
-    const streamData = [myStream, myCanStream];
+    const streamData = [myCanStream, myStream];
 
     console.log(streamData);
     const peer = new Peer({
@@ -193,60 +191,48 @@ const Mobile = () => {
     console.error(err);
   };
   return (
-    <Box
-      position="relative"
-      display="flex"
-      justifyContent="center"
-      alignItems="center"
-      w="100vw"
-      h="100vh"
-      bg="#000"
-    >
-      {mobileStream.length > 0 && isConnect && !isPen && (
-        <>
-          <MobileSelector
-            cameraStream={cameraStream}
-            screenStream={screenStream}
-            selfPhoneStream={selfPhoneStream}
-            setSelfPhoneStream={setSelfPhoneStream}
-            selfDesktopStream={selfDesktopStream}
-            setSelfDesktopStream={setSelfDesktopStream}
-            showRear={showRear}
-            currStream={currStream}
-          />
-        </>
-      )}
-      {isQr && (
-        <span style={isPen ? { display: 'block' } : { display: 'none' }}>
-          <SketchField
-            tool={currTool}
-            lineColor="black"
-            lineWidth={3}
-            width={500}
-            height={500}
-            ref={sketchRef}
-            lineColor={lineColor}
-          />
-        </span>
-      )}
-      <button className="openSpring" onClick={() => setOpen(true)}>
-        <Icon as={FiSettings} />
-      </button>
-      {!isQr && (
-        <Button colorScheme="teal" onClick={() => setIsQr(true)}>
-          Scan
-        </Button>
-      )}
-      {isQr && !isConnect && (
-        <Box
-          w="100%"
-          h="100%"
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          bg="#fff"
-        >
-          {/* <Box w="100vw" h="100%">
+    <Box>
+      <Box
+        position="relative"
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        w="100vw"
+        h="100vh"
+        bg="#fff"
+      >
+        {mobileStream.length > 0 && isConnect && !isPen && (
+          <>
+            <MobileSelector
+              cameraStream={cameraStream}
+              screenStream={screenStream}
+              selfPhoneStream={selfPhoneStream}
+              setSelfPhoneStream={setSelfPhoneStream}
+              selfDesktopStream={selfDesktopStream}
+              setSelfDesktopStream={setSelfDesktopStream}
+              showRear={showRear}
+              currStream={currStream}
+            />
+          </>
+        )}
+        <button className="openSpringPrime" onClick={() => setOpen(true)}>
+          <Icon as={FiSettings} />
+        </button>
+        {!isQr && (
+          <Button colorScheme="teal" onClick={() => setIsQr(true)}>
+            Scan
+          </Button>
+        )}
+        {isQr && !isConnect && (
+          <Box
+            w="100%"
+            h="100%"
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            bg="#fff"
+          >
+            {/* <Box w="100vw" h="100%">
             <QrReader
               delay={delay}
               style={previewStyle}
@@ -255,19 +241,19 @@ const Mobile = () => {
             />
             <Text color="white">{result}</Text>
           </Box> */}
-          <Input
-            type="text"
-            onChange={(e) => setManualQr(e.target.value)}
-            placeholder="Enter Qr object"
-          />
-          <Button
-            isLoading={loadBtn ? true : false}
-            colorScheme="teal"
-            onClick={handleSubmit}
-          >
-            submit
-          </Button>
-          {/* {isQr && (
+            <Input
+              type="text"
+              onChange={(e) => setManualQr(e.target.value)}
+              placeholder="Enter Qr object"
+            />
+            <Button
+              isLoading={loadBtn ? true : false}
+              colorScheme="teal"
+              onClick={handleSubmit}
+            >
+              submit
+            </Button>
+            {/* {isQr && (
             <span style={{ display: 'block' }}>
               <SketchField
                 tool={currTool}
@@ -278,34 +264,65 @@ const Mobile = () => {
               />
             </span>
           )} */}
-        </Box>
+          </Box>
+        )}
+        <MobileSpring
+          open={open}
+          setOpen={setOpen}
+          sketchRef={sketchRef}
+          setCurrTool={setCurrTool}
+          lineColor={lineColor}
+          setLineColor={setLineColor}
+          selfPhoneStream={selfPhoneStream}
+          setSelfPhoneStream={setSelfPhoneStream}
+          selfDesktopStream={selfDesktopStream}
+          setSelfDesktopStream={setSelfDesktopStream}
+          streamId={streamId}
+          showRear={showRear}
+          setShowRear={setShowRear}
+          currStream={currStream}
+          setCurrStream={setCurrStream}
+          selectValue={selectValue}
+          setSelectValue={setSelectValue}
+          speer={speer}
+          isPen={isPen}
+          setIsPen={setIsPen}
+          setIsConnect={setIsConnect}
+          setIsQr={setIsQr}
+        />
+      </Box>
+      {isQr && (
+        <span
+          style={
+            isPen
+              ? { ...sketchStyle, visibility: 'visible' }
+              : { ...sketchStyle, visibility: 'hidden', pointerEvents: 'none' }
+          }
+        >
+          <>
+            <SketchField
+              tool={currTool}
+              lineColor="black"
+              lineWidth={3}
+              // width={900}
+              // height={900}
+              ref={sketchRef}
+              lineColor={lineColor}
+            />
+          </>
+        </span>
       )}
-      <MobileSpring
-        open={open}
-        setOpen={setOpen}
-        sketchRef={sketchRef}
-        setCurrTool={setCurrTool}
-        lineColor={lineColor}
-        setLineColor={setLineColor}
-        selfPhoneStream={selfPhoneStream}
-        setSelfPhoneStream={setSelfPhoneStream}
-        selfDesktopStream={selfDesktopStream}
-        setSelfDesktopStream={setSelfDesktopStream}
-        streamId={streamId}
-        showRear={showRear}
-        setShowRear={setShowRear}
-        currStream={currStream}
-        setCurrStream={setCurrStream}
-        selectValue={selectValue}
-        setSelectValue={setSelectValue}
-        speer={speer}
-        isPen={isPen}
-        setIsPen={setIsPen}
-        setIsConnect={setIsConnect}
-        setIsQr={setIsQr}
-      />
     </Box>
   );
 };
 
 export default Mobile;
+
+const sketchStyle = {
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  width: '100vw',
+  height: '90vh',
+  zIndex: '3'
+};
