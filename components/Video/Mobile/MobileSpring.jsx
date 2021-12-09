@@ -63,10 +63,8 @@ const MobileSpring = (props) => {
   const focusRef = useRef();
   const [addTextValue, setAddTextValue] = useState('');
   const [isProjector, setIsProjector] = useState(false);
-  const [streamOpt, setStreamOpt] = useState({
-    audio: false,
-    video: { facingMode: 'environment' }
-  });
+  const [audioEn, setAudioEn] = useState(true);
+  const [videoType, setVideoType] = useState('environment');
   useEffect(() => {
     if (streamId) {
       streamId.forEach((value) => {
@@ -121,32 +119,52 @@ const MobileSpring = (props) => {
   };
 
   const toggleAudio = async () => {
-    const audio = currStream.getAudioTracks()[0];
-    if (!audio) {
+    const copyCurrStream = currStream;
+    const audioTrack = copyCurrStream.getAudioTracks()[0];
+    audioTrack.enabled = !audioTrack.enabled;
+    setCurrStream(copyCurrStream);
+    setAudioEn(!audioEn);
+    console.log(audioTrack.enabled);
+    // if (!audio) {
+    //   const myStream = await navigator.mediaDevices.getUserMedia({
+    //     audio: true,
+    //     video: { facingMode: 'environment' }
+    //   });
+    //   speer.addTrack(myStream.getAudioTracks()[0], currStream);
+    //   console.log('d');
+    //   console.log(currStream);
+    //   speer.negotiate();
+    // } else {
+    //   console.log('e');
+    //   speer.removeTrack(currStream.getAudioTracks()[0], currStream);
+    // }
+  };
+
+  const switchCamera = async () => {
+    const oldTrack = currStream.getVideoTracks()[0];
+    if (videoType === 'environment') {
+      const myStream = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+        video: { facingMode: 'user' }
+      });
+      const newTrack = myStream.getVideoTracks()[0];
+      speer.replaceTrack(oldTrack, newTrack, currStream);
+      setVideoType('user');
+      console.log('ddd');
+    } else if (videoType === 'user') {
       const myStream = await navigator.mediaDevices.getUserMedia({
         audio: true,
         video: { facingMode: 'environment' }
       });
-      speer.addTrack(myStream.getAudioTracks()[0], currStream);
-      console.log('d');
-    } else {
-      console.log('d');
-      speer.removeTrack(currStream.getAudioTracks()[0], currStream);
+      const newTrack = myStream.getVideoTracks()[0];
+      speer.replaceTrack(oldTrack, newTrack, currStream);
+      setVideoType('environment');
+      console.log('dde');
     }
-  };
-
-  const switchCamera = async () => {
-    console.log(currStream.getAudioTracks()[0]);
   };
 
   const toggleShowRear = async () => {
-    if (showRear) {
-      setShowRear(false);
-    } else {
-      setShowRear(true);
-      const stream = await navigator.mediaDevices.getUserMedia(streamOpt);
-      setCurrStream(stream);
-    }
+    setShowRear(!showRear);
   };
 
   const streamDecision = (stream) => {
@@ -230,7 +248,7 @@ const MobileSpring = (props) => {
               onClick={switchCamera}
             />
           )}
-          {streamOpt.audio ? (
+          {audioEn ? (
             <Icon as={BiMicrophoneOff} w={8} h={8} onClick={toggleAudio} />
           ) : (
             <Icon as={AiOutlineAudio} w={8} h={8} onClick={toggleAudio} />

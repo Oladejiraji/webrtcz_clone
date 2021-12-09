@@ -85,6 +85,7 @@ const BarModal = (props) => {
       answerOptions: { offerToReceiveAudio: true, offerToReceiveVideo: true }
     });
     peer.addTransceiver('video', undefined);
+    peer.addTransceiver('audio', undefined);
     peer.on('signal', (peerData) => {
       console.log(peerData);
       insertSdp(peerData, peer, streamId);
@@ -94,6 +95,7 @@ const BarModal = (props) => {
         description: 'Connected successfully',
         status: 'success',
         duration: 9000,
+        position: 'top',
         isClosable: true
       });
       onClose();
@@ -111,10 +113,20 @@ const BarModal = (props) => {
       if (data === 'falsePen') setActiveRemoteCanvas(false);
       if (data === 'close-conn') closePeer();
     });
-    console.log(streamData);
+    peer.on('negotiate', (data) => {
+      console.log(data);
+      console.log('yoooo');
+    });
     peer.on('error', (err) => {
       console.log(err);
+      errorConn();
     });
+  };
+
+  const errorConn = () => {
+    setActiveRemoteCanvas(null);
+    setActiveRemoteStream(null);
+    closePeer();
   };
 
   const closePeer = () => {

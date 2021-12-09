@@ -95,6 +95,7 @@ const Mobile = () => {
       offerOptions: { offerToReceiveAudio: true, offerToReceiveVideo: true }
     });
     peer.addTransceiver('video', undefined);
+    peer.addTransceiver('audio', undefined);
     // peer.addStream(myCanStream);
 
     const { data, error } = await supabase
@@ -116,8 +117,13 @@ const Mobile = () => {
         description: 'Connected successfully',
         status: 'success',
         duration: 9000,
+        position: 'top',
         isClosable: true
       });
+    });
+    peer.on('negotiate', (data) => {
+      console.log(data);
+      console.log('yoooo');
     });
     peer.on('stream', (stream) => {
       console.log(stream);
@@ -127,9 +133,14 @@ const Mobile = () => {
     });
     setSpeer(peer);
     peer.on('error', (err) => {
-      console.log(err);
+      errorConn();
     });
     console.log('fhrhfhrhfhrh');
+  };
+
+  const errorConn = () => {
+    setIsConnect(false);
+    setIsQr(false);
   };
 
   const updateResId = async (myStream, myCanStream) => {
