@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next",
     "build": "next build",
+    "now-build": "cp canvas_lib64/*so.1 node_modules/canvas/build/Release/",
     "start": "next start",
     "stripe:listen": "stripe listen --forward-to=localhost:3000/api/webhooks --project-name=saas-starter"
   },
