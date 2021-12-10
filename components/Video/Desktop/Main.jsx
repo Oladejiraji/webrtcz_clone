@@ -90,10 +90,10 @@ const Main = () => {
           onResize={null}
           style={style}
           default={{
-            x: 400,
+            x: 700,
             y: 0,
-            width: 240,
-            height: 240
+            width: 320,
+            height: 320
           }}
         >
           <video
@@ -101,7 +101,6 @@ const Main = () => {
             ref={remoteRef}
             autoPlay
             playsInline
-            muted
           ></video>
         </Rnd>
       )}

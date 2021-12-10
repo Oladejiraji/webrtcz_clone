@@ -72,9 +72,8 @@ const Mobile = () => {
       }
     }
   }, [selfDesktopStream, selfPhoneStream, showRear]);
-  const [manualQr, setManualQr] = useState({});
 
-  const startConn = async () => {
+  const startConn = async (manualQr) => {
     setLoadBtn(true);
     const myStream = await navigator.mediaDevices.getUserMedia({
       audio: true,
@@ -83,10 +82,10 @@ const Mobile = () => {
     setCurrStream(myStream);
     const myCanStream = document.querySelector('.lower-canvas').captureStream();
     setCanvasStream(myCanStream);
-    updateResId(myStream, myCanStream);
+    updateResId(myStream, myCanStream, manualQr);
     const streamData = [myCanStream, myStream];
 
-    console.log(streamData);
+    // console.log(streamData);
     const peer = new Peer({
       initiator: false,
       trickle: false,
@@ -96,7 +95,7 @@ const Mobile = () => {
     });
     peer.addTransceiver('video', undefined);
     peer.addTransceiver('audio', undefined);
-
+    console.log(manualQr);
     const { data, error } = await supabase
       .from('session_info')
       .select()
@@ -107,7 +106,7 @@ const Mobile = () => {
       console.log(data);
       if (data.type !== 'answer') return;
       console.log(data);
-      updateSdp(data);
+      updateSdp(data, manualQr);
     });
     peer.on('connect', () => {
       setIsConnect(true);
@@ -137,21 +136,22 @@ const Mobile = () => {
     console.log('fhrhfhrhfhrh');
   };
 
-  const handleScan = async (qrData) => {
+  const handleScan = (qrData) => {
     if (qrData !== null && !scanReady) {
-      setManualQr(qrData);
+      const qrNo = parseInt(qrData.text);
+      console.log(qrNo);
+      startConn(qrNo);
       setScanReady(true);
-      startConn();
-      console.log(qrData);
     }
   };
 
   const errorConn = () => {
     setIsConnect(false);
     setIsQr(false);
+    setIsPen(false);
   };
 
-  const updateResId = async (myStream, myCanStream) => {
+  const updateResId = async (myStream, myCanStream, manualQr) => {
     const streamId = [
       { type: 'camera', stream: myStream.id },
       { type: 'canvas', stream: myCanStream.id }
@@ -163,7 +163,7 @@ const Mobile = () => {
     console.log(data);
   };
 
-  const updateSdp = async (peerData) => {
+  const updateSdp = async (peerData, manualQr) => {
     const { data, error } = await supabase
       .from('session_info')
       .update({ sdp: { type: 'answer', peerData } })
@@ -219,13 +219,6 @@ const Mobile = () => {
             bg="#fff"
           >
             <Box w="100vw" h="100%">
-              {/* <QrReader
-                delay={delay}
-                style={previewStyle}
-                onError={handleError}
-                onScan={handleScan}
-                facingMode="rear"
-              /> */}
               <QrReader
                 delay={1000}
                 style={previewStyle}

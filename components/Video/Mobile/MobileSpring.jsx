@@ -124,20 +124,6 @@ const MobileSpring = (props) => {
     audioTrack.enabled = !audioTrack.enabled;
     setCurrStream(copyCurrStream);
     setAudioEn(!audioEn);
-    console.log(audioTrack.enabled);
-    // if (!audio) {
-    //   const myStream = await navigator.mediaDevices.getUserMedia({
-    //     audio: true,
-    //     video: { facingMode: 'environment' }
-    //   });
-    //   speer.addTrack(myStream.getAudioTracks()[0], currStream);
-    //   console.log('d');
-    //   console.log(currStream);
-    //   speer.negotiate();
-    // } else {
-    //   console.log('e');
-    //   speer.removeTrack(currStream.getAudioTracks()[0], currStream);
-    // }
   };
 
   const switchCamera = async () => {
@@ -193,6 +179,7 @@ const MobileSpring = (props) => {
     setIsConnect(false);
     setIsQr(false);
     speer.destroy('close-conn');
+    setIsPen(false);
   };
   return (
     <Box>

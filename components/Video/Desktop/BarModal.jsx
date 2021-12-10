@@ -124,14 +124,14 @@ const BarModal = (props) => {
   };
 
   const errorConn = () => {
-    setActiveRemoteCanvas(null);
-    setActiveRemoteStream(null);
     closePeer();
   };
 
   const closePeer = () => {
     console.log('deji');
     setSessionId(null);
+    setActiveRemoteCanvas(null);
+    setActiveRemoteStream(null);
   };
 
   const insertSdp = async (peerData, peer, streamId) => {

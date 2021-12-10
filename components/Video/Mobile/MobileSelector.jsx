@@ -30,12 +30,15 @@ const MobileSelector = (props) => {
       if (showRear) {
         smallCameraRef.current.srcObject = cameraStream;
         screenRef.current.srcObject = currStream;
+      } else if (!showRear && selfDesktopStream) {
+        smallCameraRef.current.srcObject = cameraStream;
       } else {
         smallCameraRef.current.srcObject = cameraStream;
         screenRef.current.srcObject = screenStream;
       }
     }
     if (selfPhoneStream && !selfDesktopStream && !showRear) {
+      console.log(showRear);
       smallSelf.current.srcObject = selfPhoneStream;
     } else if (!selfPhoneStream && selfDesktopStream) {
       bigSelf.current.srcObject = selfDesktopStream;
@@ -50,15 +53,15 @@ const MobileSelector = (props) => {
   };
   return (
     <>
-      {selfPhoneStream && !showRear && (
+      {selfPhoneStream && !selfDesktopStream && !showRear && (
         <Rnd
           onResize={null}
           style={style}
           default={{
-            x: 400,
+            x: 100,
             y: 0,
-            width: 240,
-            height: 240
+            width: 180,
+            height: 180
           }}
         >
           <video
@@ -87,8 +90,8 @@ const MobileSelector = (props) => {
             default={{
               x: 0,
               y: 0,
-              width: 240,
-              height: 240
+              width: 180,
+              height: 180
             }}
           >
             <video
@@ -99,13 +102,15 @@ const MobileSelector = (props) => {
               muted
             ></video>
           </Rnd>
-          <video
-            className="mob_screen"
-            ref={screenRef}
-            autoPlay
-            playsInline
-            muted
-          ></video>
+          {!selfDesktopStream && (
+            <video
+              className="mob_screen"
+              ref={screenRef}
+              autoPlay
+              playsInline
+              muted
+            ></video>
+          )}
         </div>
       )}
       {cameraStream && !screenStream && !selfDesktopStream && (
