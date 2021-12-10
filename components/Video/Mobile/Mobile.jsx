@@ -39,6 +39,7 @@ const Mobile = () => {
   const [retId, setRetId] = useState([]);
   const [isPen, setIsPen] = useState(false);
   const [canvasStream, setCanvasStream] = useState(null);
+  const [scanReady, setScanReady] = useState(false);
   const previewStyle = {
     width: '100vw',
     height: '100vh'
@@ -72,9 +73,8 @@ const Mobile = () => {
     }
   }, [selfDesktopStream, selfPhoneStream, showRear]);
   const [manualQr, setManualQr] = useState({});
-  const handleSubmit = async () => {
-    // const decodeExpand = expand(manuaQr);
-    // console.log(JSON.parse(decodeExpand));
+
+  const startConn = async () => {
     setLoadBtn(true);
     const myStream = await navigator.mediaDevices.getUserMedia({
       audio: true,
@@ -96,7 +96,6 @@ const Mobile = () => {
     });
     peer.addTransceiver('video', undefined);
     peer.addTransceiver('audio', undefined);
-    // peer.addStream(myCanStream);
 
     const { data, error } = await supabase
       .from('session_info')
@@ -138,6 +137,15 @@ const Mobile = () => {
     console.log('fhrhfhrhfhrh');
   };
 
+  const handleScan = async (qrData) => {
+    if (qrData !== null && !scanReady) {
+      setManualQr(qrData);
+      setScanReady(true);
+      startConn();
+      console.log(qrData);
+    }
+  };
+
   const errorConn = () => {
     setIsConnect(false);
     setIsQr(false);
@@ -163,41 +171,6 @@ const Mobile = () => {
     console.log(data);
   };
 
-  // const handleScan = async (qrData) => {
-  //   setResult(qrData);
-  //   if (result && result !== 'No result') {
-  //     const peer = new Peer({
-  //       initiator: false,
-  //       trickle: false
-  //     });
-  //     const { data, error } = await supabase
-  //       .from('session_info')
-  //       .select()
-  //       .eq('id', qrData);
-  //     peer.signal(data[0].sdp.peerData);
-  //     setStreamId(data[0].stream);
-  //     // if (mobileStream.length > 0) console.log(1);
-  //     peer.on('signal', (data) => {
-  //       updateSdp(data);
-  //     });
-  //     peer.on('connect', () => {
-  //       setIsConnect(true);
-  //       setLoadBtn(false);
-  //       toast({
-  //         description: 'Connected successfully',
-  //         status: 'success',
-  //         duration: 9000,
-  //         isClosable: true
-  //       });
-  //     });
-  //     peer.on('stream', (stream) => {
-  //       console.log(stream);
-  //       setMobileStream((prev) => {
-  //         return [...prev, stream];
-  //       });
-  //     });
-  //   }
-  // };
   const handleError = (err) => {
     console.error(err);
   };
@@ -226,9 +199,11 @@ const Mobile = () => {
             />
           </>
         )}
-        <button className="openSpringPrime" onClick={() => setOpen(true)}>
-          <Icon as={FiSettings} />
-        </button>
+        {isQr && isConnect && (
+          <button className="openSpringPrime" onClick={() => setOpen(true)}>
+            <Icon as={FiSettings} />
+          </button>
+        )}
         {!isQr && (
           <Button colorScheme="teal" onClick={() => setIsQr(true)}>
             Scan
@@ -243,16 +218,16 @@ const Mobile = () => {
             alignItems="center"
             bg="#fff"
           >
-            {/* <Box w="100vw" h="100%">
-            <QrReader
-              delay={delay}
-              style={previewStyle}
-              onError={handleError}
-              onScan={handleScan}
-            />
-            <Text color="white">{result}</Text>
-          </Box> */}
-            <Input
+            <Box w="100vw" h="100%">
+              <QrReader
+                delay={delay}
+                style={previewStyle}
+                onError={handleError}
+                onScan={handleScan}
+              />
+              <Text color="white">{result}</Text>
+            </Box>
+            {/* <Input
               type="text"
               onChange={(e) => setManualQr(e.target.value)}
               placeholder="Enter Qr object"
@@ -263,18 +238,7 @@ const Mobile = () => {
               onClick={handleSubmit}
             >
               submit
-            </Button>
-            {/* {isQr && (
-            <span style={{ display: 'block' }}>
-              <SketchField
-                tool={currTool}
-                lineColor="black"
-                lineWidth={3}
-                ref={sketchRef}
-                lineColor={lineColor}
-              />
-            </span>
-          )} */}
+            </Button> */}
           </Box>
         )}
         <MobileSpring
@@ -315,8 +279,6 @@ const Mobile = () => {
               tool={currTool}
               lineColor="black"
               lineWidth={3}
-              // width={900}
-              // height={900}
               ref={sketchRef}
               lineColor={lineColor}
             />

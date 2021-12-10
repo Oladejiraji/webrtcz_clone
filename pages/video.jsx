@@ -7,7 +7,7 @@ const Video = ({ ua }) => {
   return (
     <UserAgentProvider ua={ua}>
       <div>
-        <UserAgent mobile>
+        <UserAgent mobile tablet>
           <Mobile />
         </UserAgent>
         <UserAgent computer>

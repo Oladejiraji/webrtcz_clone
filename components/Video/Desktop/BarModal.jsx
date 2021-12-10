@@ -61,7 +61,7 @@ const BarModal = (props) => {
     let streamData = [];
     let streamId = [];
     if (isCamera && !isScreen) {
-      consoel.log(1);
+      console.log(1);
       streamData = [mediaStream];
       streamId = [{ type: 'camera', stream: mediaStream.id }];
     } else if (isScreen && !isCamera) {
