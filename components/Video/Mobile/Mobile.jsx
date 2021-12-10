@@ -219,9 +219,21 @@ const Mobile = () => {
             bg="#fff"
           >
             <Box w="100vw" h="100%">
-              <QrReader
+              {/* <QrReader
                 delay={delay}
                 style={previewStyle}
+                onError={handleError}
+                onScan={handleScan}
+                facingMode="rear"
+              /> */}
+              <QrReader
+                delay={1000}
+                style={previewStyle}
+                constraints={{
+                  video: {
+                    facingMode: 'environment'
+                  }
+                }}
                 onError={handleError}
                 onScan={handleScan}
               />
