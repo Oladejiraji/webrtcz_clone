@@ -79,6 +79,20 @@ const BarModal = (props) => {
     console.log(streamData);
     const peer = new Peer({
       initiator: true,
+      config: {
+        iceServers: [
+          {
+            urls: 'stun:numb.viagenie.ca',
+            username: 'rajioladeji2@gmail.com',
+            credential: process.env.NEXT_PUBLIC_ICE_PWD
+          },
+          {
+            urls: 'turn:numb.viagenie.ca',
+            username: 'rajioladeji2@gmail.com',
+            credential: process.env.NEXT_PUBLIC_ICE_PWD
+          }
+        ]
+      },
       trickle: false,
       streams: streamData,
       objectMode: true,
