@@ -50,8 +50,10 @@ const Mobile = () => {
   const [scanReady, setScanReady] = useState(false);
   const [qrLoading, setQrLoading] = useState(false);
   const previewStyle = {
-    width: '100vw',
-    height: '100vh'
+    width: '100%',
+    height: 'auto',
+    outline: '5px dashed red',
+    outlineOffset: '-30px'
   };
 
   // Appending the streams to their ids
@@ -213,11 +215,11 @@ const Mobile = () => {
             />
           </>
         )}
-        {
+        {isQr && isConnect && (
           <button className="openSpringPrime" onClick={() => setOpen(true)}>
             <Icon as={FiSettings} />
           </button>
-        }
+        )}
         {!isQr && (
           <Button colorScheme="teal" onClick={() => setIsQr(true)}>
             Scan
@@ -244,7 +246,14 @@ const Mobile = () => {
                   <CircularProgress isIndeterminate value={80} />
                 </Box>
               ) : (
-                <>
+                <Box
+                  w="100vw"
+                  h="100%"
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  flexDirection="column"
+                >
                   <QrReader
                     delay={1000}
                     style={previewStyle}
@@ -257,7 +266,7 @@ const Mobile = () => {
                     onScan={handleScan}
                   />
                   <Text color="white">{result}</Text>
-                </>
+                </Box>
               )}
             </Box>
             {/* <Input
