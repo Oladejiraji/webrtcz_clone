@@ -128,6 +128,7 @@ const MobileSpring = (props) => {
 
   const switchCamera = async () => {
     const oldTrack = currStream.getVideoTracks()[0];
+    currStream.getVideoTracks()[0].stop();
     if (videoType === 'environment') {
       const myStream = await navigator.mediaDevices.getUserMedia({
         audio: true,
@@ -135,8 +136,9 @@ const MobileSpring = (props) => {
       });
       const newTrack = myStream.getVideoTracks()[0];
       speer.replaceTrack(oldTrack, newTrack, currStream);
+      currStream.removeTrack(oldTrack);
+      currStream.addTrack(newTrack);
       setVideoType('user');
-      console.log('ddd');
     } else if (videoType === 'user') {
       const myStream = await navigator.mediaDevices.getUserMedia({
         audio: true,
@@ -144,8 +146,9 @@ const MobileSpring = (props) => {
       });
       const newTrack = myStream.getVideoTracks()[0];
       speer.replaceTrack(oldTrack, newTrack, currStream);
+      currStream.removeTrack(oldTrack);
+      currStream.addTrack(newTrack);
       setVideoType('environment');
-      console.log('dde');
     }
   };
 

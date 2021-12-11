@@ -83,12 +83,12 @@ const BarModal = (props) => {
         iceServers: [
           {
             urls: 'stun:numb.viagenie.ca',
-            username: 'rajioladeji2@gmail.com',
+            username: process.env.NEXT_PUBLIC_ICE_EMAIL,
             credential: process.env.NEXT_PUBLIC_ICE_PWD
           },
           {
             urls: 'turn:numb.viagenie.ca',
-            username: 'rajioladeji2@gmail.com',
+            username: process.env.NEXT_PUBLIC_ICE_EMAIL,
             credential: process.env.NEXT_PUBLIC_ICE_PWD
           }
         ]

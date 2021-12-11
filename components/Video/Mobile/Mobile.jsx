@@ -1,5 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Box, Button, Text, Icon, Input, useToast } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Text,
+  Icon,
+  Input,
+  useToast,
+  CircularProgress
+} from '@chakra-ui/react';
 import dynamic from 'next/dynamic';
 import { FiSettings } from 'react-icons/fi';
 import MobileSpring from './MobileSpring';
@@ -40,6 +48,7 @@ const Mobile = () => {
   const [isPen, setIsPen] = useState(false);
   const [canvasStream, setCanvasStream] = useState(null);
   const [scanReady, setScanReady] = useState(false);
+  const [qrLoading, setQrLoading] = useState(false);
   const previewStyle = {
     width: '100vw',
     height: '100vh'
@@ -111,6 +120,8 @@ const Mobile = () => {
     peer.on('connect', () => {
       setIsConnect(true);
       setLoadBtn(false);
+      setScanReady(false);
+      setQrLoading(false);
       toast({
         description: 'Connected successfully',
         status: 'success',
@@ -131,7 +142,9 @@ const Mobile = () => {
     });
     setSpeer(peer);
     peer.on('error', (err) => {
+      setScanReady(false);
       errorConn();
+      setQrLoading(false);
     });
     console.log('fhrhfhrhfhrh');
   };
@@ -142,6 +155,7 @@ const Mobile = () => {
       console.log(qrNo);
       startConn(qrNo);
       setScanReady(true);
+      setQrLoading(true);
     }
   };
 
@@ -219,18 +233,32 @@ const Mobile = () => {
             bg="#fff"
           >
             <Box w="100vw" h="100%">
-              <QrReader
-                delay={1000}
-                style={previewStyle}
-                constraints={{
-                  video: {
-                    facingMode: 'environment'
-                  }
-                }}
-                onError={handleError}
-                onScan={handleScan}
-              />
-              <Text color="white">{result}</Text>
+              {qrLoading ? (
+                <Box
+                  w="100vw"
+                  h="100%"
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                >
+                  <CircularProgress isIndeterminate value={80} />
+                </Box>
+              ) : (
+                <>
+                  <QrReader
+                    delay={1000}
+                    style={previewStyle}
+                    constraints={{
+                      video: {
+                        facingMode: 'environment'
+                      }
+                    }}
+                    onError={handleError}
+                    onScan={handleScan}
+                  />
+                  <Text color="white">{result}</Text>
+                </>
+              )}
             </Box>
             {/* <Input
               type="text"

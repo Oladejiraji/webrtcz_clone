@@ -59,7 +59,7 @@ const MobileSelector = (props) => {
           style={style}
           default={{
             x: 100,
-            y: 0,
+            y: 100,
             width: 180,
             height: 180
           }}
