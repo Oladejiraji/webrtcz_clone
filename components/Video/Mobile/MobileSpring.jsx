@@ -65,6 +65,8 @@ const MobileSpring = (props) => {
   const [isProjector, setIsProjector] = useState(false);
   const [audioEn, setAudioEn] = useState(true);
   const [videoType, setVideoType] = useState('environment');
+  const [device, setDevice] = useState('');
+  const [formTool, setFormTool] = useState(Tools.Pencil);
   useEffect(() => {
     if (streamId) {
       streamId.forEach((value) => {
@@ -79,16 +81,18 @@ const MobileSpring = (props) => {
   }
   const handleChange = async (...args) => {
     setSelectValue(args[0]);
-    if (args[0] === '') return;
-    // console.log('ARGS:', args);
-
-    console.log(args);
-    if (args[0] === 'phone') {
+    if (args[0] === '') {
+      setDevice('phone');
+      setSelfDesktopStream(null);
+      setSelfPhoneStream(null);
+    } else if (args[0] === 'phone') {
       console.log('phone');
+      setDevice('phone');
       setSelfDesktopStream(null);
       setSelfPhoneStream(currStream);
     } else if (args[0] === 'desktop') {
       console.log('desktop');
+      setDevice('desktop');
       setSelfDesktopStream(currStream);
       setSelfPhoneStream(null);
     }
@@ -111,6 +115,7 @@ const MobileSpring = (props) => {
   };
 
   const handleToolsChange = (e) => {
+    setFormTool(e.target.value);
     setCurrTool(e.target.value);
   };
 
@@ -170,10 +175,10 @@ const MobileSpring = (props) => {
     setIsPen(!isPen);
     if (isPen === false) {
       console.log(false);
-      speer.send('truePen');
+      // speer.send('truePen');
     } else if (isPen === true) {
       console.log(true);
-      speer.send('falsePen');
+      // speer.send('falsePen');
     }
   };
 
@@ -202,7 +207,7 @@ const MobileSpring = (props) => {
         <Box display="flex" justifyContent="center" py="5px" mb="10px">
           <SelectSearch
             options={options}
-            value=""
+            value={device}
             name="device"
             onChange={handleChange}
           />
@@ -285,6 +290,7 @@ const MobileSpring = (props) => {
                       // placeholder="Select Canvas Tool"
                       onChange={handleToolsChange}
                       variant="flushed"
+                      value={formTool}
                     >
                       <option value={Tools.Pencil}>Pencil</option>
                       <option value={Tools.Rectangle}>Rectangle</option>

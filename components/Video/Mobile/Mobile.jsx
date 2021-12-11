@@ -213,11 +213,11 @@ const Mobile = () => {
             />
           </>
         )}
-        {isQr && isConnect && (
+        {
           <button className="openSpringPrime" onClick={() => setOpen(true)}>
             <Icon as={FiSettings} />
           </button>
-        )}
+        }
         {!isQr && (
           <Button colorScheme="teal" onClick={() => setIsQr(true)}>
             Scan
