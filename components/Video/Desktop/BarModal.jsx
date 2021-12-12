@@ -37,6 +37,7 @@ const BarModal = (props) => {
   const [sessionId, setSessionId] = useState(null);
   const [desktopStream, setDesktopStream] = useState([]);
   const [resStreamId, setResStreamId] = useState(null);
+  const [loadBtn, setLoadBtn] = useState(false);
 
   useEffect(() => {
     if (resStreamId && desktopStream.length > 0) {
@@ -57,6 +58,7 @@ const BarModal = (props) => {
   }, [resStreamId, desktopStream]);
 
   const generateQr = () => {
+    setLoadBtn(true);
     if (!mediaStream && !screenStream && !isScreen && !isCamera) return;
     let streamData = [];
     let streamId = [];
@@ -153,6 +155,7 @@ const BarModal = (props) => {
       .from('session_info')
       .insert([{ sdp: { type: 'offer', peerData }, stream: streamId }]);
     setSessionId(data[0].id);
+    setLoadBtn(false);
     console.log(data[0].id);
     // Get sdp answer from db
     const sdpInt = setInterval(async () => {
@@ -187,7 +190,9 @@ const BarModal = (props) => {
           </Box>
           {!sessionId && (
             <Box display="flex" justifyContent="center">
-              <Button onClick={generateQr}>Generate QR</Button>
+              <Button isLoading={loadBtn ? true : false} onClick={generateQr}>
+                Generate QR
+              </Button>
             </Box>
           )}
           {/* <Box display="none" mt="10px">

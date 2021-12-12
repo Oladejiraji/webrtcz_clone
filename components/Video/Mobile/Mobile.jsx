@@ -52,7 +52,7 @@ const Mobile = () => {
   const previewStyle = {
     width: '100%',
     height: 'auto',
-    outline: '5px dashed red',
+    outline: '5px dashed #fff',
     outlineOffset: '-30px'
   };
 

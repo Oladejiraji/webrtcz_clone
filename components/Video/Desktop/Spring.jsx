@@ -52,12 +52,14 @@ const Spring = (props) => {
 
   return (
     <div>
-      <button className="openSpring" onClick={() => setOpen(true)}>
+      {/* <button className="openSpring" onClick={() => setOpen(true)}>
         Open
-      </button>
+      </button> */}
       <BottomSheet
-        open={open}
+        open
         onDismiss={onDismiss}
+        blocking={false}
+        defaultSnap={({ minHeight }) => minHeight}
         snapPoints={({ minHeight }) => minHeight}
       >
         <Box display="flex" justifyContent="center" py="5px">
