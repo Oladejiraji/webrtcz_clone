@@ -175,10 +175,10 @@ const MobileSpring = (props) => {
     setIsPen(!isPen);
     if (isPen === false) {
       console.log(false);
-      // speer.send('truePen');
+      speer.send('truePen');
     } else if (isPen === true) {
       console.log(true);
-      // speer.send('falsePen');
+      speer.send('falsePen');
     }
   };
 

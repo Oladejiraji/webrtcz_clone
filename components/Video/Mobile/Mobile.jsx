@@ -92,6 +92,8 @@ const Mobile = () => {
     });
     setCurrStream(myStream);
     const myCanStream = document.querySelector('.lower-canvas').captureStream();
+    const context = document.querySelector('.lower-canvas');
+    context.style.backgroundColor = 'white';
     setCanvasStream(myCanStream);
     updateResId(myStream, myCanStream, manualQr);
     const streamData = [myCanStream, myStream];
@@ -277,7 +279,7 @@ const Mobile = () => {
             <Button
               isLoading={loadBtn ? true : false}
               colorScheme="teal"
-              onClick={handleSubmit}
+              onClick={() => startConn('298')}
             >
               submit
             </Button> */}
