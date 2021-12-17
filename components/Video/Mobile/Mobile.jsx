@@ -37,6 +37,8 @@ const Mobile = () => {
   const [streamId, setStreamId] = useState(null);
   const [cameraStream, setCameraStream] = useState(null);
   const [screenStream, setScreenStream] = useState(null);
+  const [isCamera, setIsCamera] = useState(false);
+  const [isScreen, setIsScreen] = useState(false);
   const [selfPhoneStream, setSelfPhoneStream] = useState(null);
   const [selfDesktopStream, setSelfDesktopStream] = useState(null);
   const [showRear, setShowRear] = useState(false);
@@ -58,22 +60,42 @@ const Mobile = () => {
 
   // Appending the streams to their ids
   useEffect(() => {
+    console.log('here');
     if (streamId && mobileStream.length > 0) {
       mobileStream.forEach((value) => {
         streamId.forEach((child) => {
           if (value.id === child.stream) {
             if (child.type === 'camera') {
               setCameraStream(value);
+              setIsCamera(true);
               console.log(child.type);
             } else if (child.type === 'screen') {
               console.log(child.type);
               setScreenStream(value);
+              setIsScreen(true);
             }
           }
         });
       });
     }
   }, [streamId, mobileStream]);
+  // Remove stream id when stream ends
+  useEffect(() => {
+    if (streamId) {
+      if (cameraStream === null) {
+        const copyStreamId = streamId.filter(
+          (value) => value.type !== 'camera'
+        );
+        setStreamId(copyStreamId);
+      }
+      if (screenStream === null) {
+        const copyStreamIdPrime = streamId.filter(
+          (value) => value.type !== 'screen'
+        );
+        setStreamId(copyStreamIdPrime);
+      }
+    }
+  }, [cameraStream, screenStream]);
   // Tell remote peer to activate camera
   useEffect(() => {
     if (selfPhoneStream || selfDesktopStream || showRear) {
@@ -93,7 +115,6 @@ const Mobile = () => {
     setCurrStream(myStream);
     const myCanStream = document.querySelector('.lower-canvas').captureStream();
     const context = document.querySelector('.lower-canvas');
-    context.style.backgroundColor = 'white';
     setCanvasStream(myCanStream);
     updateResId(myStream, myCanStream, manualQr);
     const streamData = [myCanStream, myStream];
@@ -134,6 +155,13 @@ const Mobile = () => {
         isClosable: true
       });
     });
+    peer.on('data', (data) => {
+      console.log(data);
+      if (data === 'dis-camera') setIsCamera(false);
+      if (data === 'dis-screen') setIsStream(false);
+      if (data === 'conn-screen') setIsStream(true);
+      if (data === 'conn-camera') setIsCamera(true);
+    });
     peer.on('negotiate', (data) => {
       console.log(data);
       console.log('yoooo');
@@ -167,6 +195,9 @@ const Mobile = () => {
     setIsConnect(false);
     setIsQr(false);
     setIsPen(false);
+    console.log(currStream);
+    // currStream.getVideoTracks()[0].stop();
+    // currStream.getAudioTracks()[0].stop();
   };
 
   const updateResId = async (myStream, myCanStream, manualQr) => {
@@ -203,7 +234,7 @@ const Mobile = () => {
         h="100vh"
         bg="#fff"
       >
-        {mobileStream.length > 0 && isConnect && !isPen && (
+        {mobileStream.length > 0 && isConnect && (
           <>
             <MobileSelector
               cameraStream={cameraStream}
@@ -214,6 +245,9 @@ const Mobile = () => {
               setSelfDesktopStream={setSelfDesktopStream}
               showRear={showRear}
               currStream={currStream}
+              isCamera={isCamera}
+              setIsScreen={setIsScreen}
+              isScreen={isScreen}
             />
           </>
         )}
@@ -237,7 +271,7 @@ const Mobile = () => {
             bg="#fff"
           >
             <Box w="100vw" h="100%">
-              {qrLoading ? (
+              {/* {qrLoading ? (
                 <Box
                   w="100vw"
                   h="100%"
@@ -269,20 +303,16 @@ const Mobile = () => {
                   />
                   <Text color="white">{result}</Text>
                 </Box>
-              )}
+              )} */}
             </Box>
-            {/* <Input
-              type="text"
-              onChange={(e) => setManualQr(e.target.value)}
-              placeholder="Enter Qr object"
-            />
+            <Input type="text" onChange={null} placeholder="Enter Qr object" />
             <Button
               isLoading={loadBtn ? true : false}
               colorScheme="teal"
-              onClick={() => startConn('298')}
+              onClick={() => startConn('332')}
             >
               submit
-            </Button> */}
+            </Button>
           </Box>
         )}
         <MobileSpring
@@ -308,6 +338,7 @@ const Mobile = () => {
           setIsPen={setIsPen}
           setIsConnect={setIsConnect}
           setIsQr={setIsQr}
+          screenStream={screenStream}
         />
       </Box>
       {isQr && (
@@ -325,6 +356,8 @@ const Mobile = () => {
               lineWidth={3}
               ref={sketchRef}
               lineColor={lineColor}
+              backgroundColor="rgba(0, 0, 0, 0)"
+              height={1000}
             />
           </>
         </span>
@@ -340,6 +373,6 @@ const sketchStyle = {
   top: 0,
   left: 0,
   width: '100vw',
-  height: '90vh',
-  zIndex: '3'
+  height: '100vh',
+  zIndex: '2'
 };

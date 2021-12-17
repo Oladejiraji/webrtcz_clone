@@ -29,10 +29,11 @@ const BarModal = (props) => {
     handleCanvasStream,
     setActiveRemoteCanvas,
     isScreen,
-    isCamera
+    isCamera,
+    setIsConnect,
+    setSpeer
   } = props;
   const [qr, setQr] = useState(null);
-  const [speer, setSpeer] = useState(null);
   const [manualQr, setManualQr] = useState({});
   const [sessionId, setSessionId] = useState(null);
   const [desktopStream, setDesktopStream] = useState([]);
@@ -114,6 +115,7 @@ const BarModal = (props) => {
         position: 'top',
         isClosable: true
       });
+      setIsConnect(true);
       onClose();
     });
     peer.on('stream', (stream) => {
@@ -137,6 +139,7 @@ const BarModal = (props) => {
       console.log(err);
       errorConn();
     });
+    setSpeer(peer);
   };
 
   const errorConn = () => {
@@ -148,6 +151,7 @@ const BarModal = (props) => {
     setSessionId(null);
     setActiveRemoteCanvas(null);
     setActiveRemoteStream(null);
+    setIsConnect(false);
   };
 
   const insertSdp = async (peerData, peer, streamId) => {

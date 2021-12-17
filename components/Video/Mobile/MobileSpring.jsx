@@ -58,7 +58,8 @@ const MobileSpring = (props) => {
     isPen,
     setIsPen,
     setIsConnect,
-    setIsQr
+    setIsQr,
+    screenStream
   } = props;
   const focusRef = useRef();
   const [addTextValue, setAddTextValue] = useState('');
@@ -124,11 +125,16 @@ const MobileSpring = (props) => {
   };
 
   const toggleAudio = async () => {
-    const copyCurrStream = currStream;
-    const audioTrack = copyCurrStream.getAudioTracks()[0];
-    audioTrack.enabled = !audioTrack.enabled;
-    setCurrStream(copyCurrStream);
-    setAudioEn(!audioEn);
+    // const copyCurrStream = currStream;
+    // const audioTrack = copyCurrStream.getAudioTracks()[0];
+    // audioTrack.enabled = !audioTrack.enabled;
+    // setCurrStream(copyCurrStream);
+    // setAudioEn(!audioEn);
+    const sendObj = {
+      deji: 'okay',
+      ola: 'dji'
+    };
+    speer.send(JSON.stringify(sendObj));
   };
 
   const switchCamera = async () => {
@@ -188,6 +194,7 @@ const MobileSpring = (props) => {
     setIsQr(false);
     speer.destroy('close-conn');
     setIsPen(false);
+    console.log(currStream.getVideoTracks()[0]);
   };
   return (
     <Box>
@@ -248,7 +255,9 @@ const MobileSpring = (props) => {
           ) : (
             <Icon as={AiOutlineAudio} w={8} h={8} onClick={toggleAudio} />
           )}
-          <Icon as={BsPen} w={8} h={8} ml="60px" onClick={togglePen} />
+          {screenStream && (
+            <Icon as={BsPen} w={8} h={8} ml="60px" onClick={togglePen} />
+          )}
         </Box>
         <Box>
           {isPen && (

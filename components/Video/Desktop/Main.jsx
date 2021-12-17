@@ -5,6 +5,7 @@ import Camera from './Camera';
 import Screen from './Screen';
 import SmallCamera from './SmallCamera';
 import { Box } from '@chakra-ui/react';
+import videoCanvas from 'video-canvas';
 
 const Main = () => {
   const [isCamera, setIsCamera] = useState(false);
@@ -18,8 +19,13 @@ const Main = () => {
   const [canvasStream, setCanvasStream] = useState(null);
   const [activeRemoteStream, setActiveRemoteStream] = useState(false);
   const [activeRemoteCanvas, setActiveRemoteCanvas] = useState(false);
+  const [psCanvas, setPsCanvas] = useState(null);
+  const [isConnect, setIsConnect] = useState(false);
+  const [speer, setSpeer] = useState(null);
   const remoteRef = useRef();
   const canvasRef = useRef();
+  const realCanvasRef = useRef();
+  const realDrawCanvasRef = useRef();
 
   useEffect(() => {
     if (remoteStream && activeRemoteStream) {
@@ -43,6 +49,48 @@ const Main = () => {
     }
   };
 
+  const createCanvas = () => {
+    if (realCanvasRef.current) {
+      videoCanvas(canvasRef.current, {
+        canvas: realCanvasRef.current
+      });
+      drawVideo();
+    }
+  };
+
+  const drawVideo = () => {
+    let width = canvasRef.current.videoWidth;
+    let height = canvasRef.current.videoHeight;
+    let ctx = realCanvasRef.current.getContext('2d');
+    let backContext = realDrawCanvasRef.current.getContext('2d');
+    ctx.clearRect(0, 0, width > 0 ? width : 500, height > 0 ? height : 500);
+    ctx.drawImage(
+      canvasRef.current,
+      0,
+      0,
+      width > 0 ? width : 500,
+      height > 0 ? height : 500
+    );
+    const iData = ctx.getImageData(
+      0,
+      0,
+      width > 0 ? width : 500,
+      height > 0 ? height : 500
+    );
+    const data = iData.data;
+    for (let i = 0; i < data.length; i += 4) {
+      let red = data[i];
+      let green = data[i + 1];
+      let blue = data[i + 2];
+      let alpha = data[i + 3];
+      if (red == 0 && green == 0 && blue == 0) {
+        iData.data[i + 3] = 0;
+      }
+    }
+    backContext.putImageData(iData, 0, 0);
+    requestAnimationFrame(drawVideo);
+  };
+
   const onClear = () => {
     console.log('cleared');
   };
@@ -57,6 +105,7 @@ const Main = () => {
     // console.log(mediaStream);
     setMediaStream(mediaStream);
   };
+  const setConnect = () => {};
   const style = {
     display: 'flex',
     alignItems: 'center',
@@ -66,6 +115,19 @@ const Main = () => {
   };
   return (
     <div className="main">
+      <video
+        className="mob_canvas"
+        ref={canvasRef}
+        autoPlay
+        playsInline
+        muted
+        onCanPlay={createCanvas}
+      ></video>
+      <canvas
+        className="real_canvas"
+        ref={realCanvasRef}
+        style={{ border: '1px solid blue', zIndex: '-3' }}
+      ></canvas>
       {canvasStream && activeRemoteCanvas && (
         <Box
           pos="absolute"
@@ -75,14 +137,11 @@ const Main = () => {
           h="100vh"
           zIndex="10000000"
         >
-          <video
-            className="mob_canvas"
-            ref={canvasRef}
-            autoPlay
-            playsInline
-            muted
-            onCanPlay={() => console.log('plau')}
-          ></video>
+          <canvas
+            className="real_draw_canvas"
+            ref={realDrawCanvasRef}
+            style={{ border: '1px solid red', width: '100vw', height: '100vh' }}
+          ></canvas>
         </Box>
       )}
       {remoteStream && activeRemoteStream && (
@@ -166,6 +225,10 @@ const Main = () => {
         setActiveRemoteStream={setActiveRemoteStream}
         handleCanvasStream={handleCanvasStream}
         setActiveRemoteCanvas={setActiveRemoteCanvas}
+        setIsConnect={setIsConnect}
+        isConnect={isConnect}
+        setSpeer={setSpeer}
+        speer={speer}
       />
     </div>
   );

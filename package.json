@@ -39,7 +39,8 @@
     "stripe": "8.132.0",
     "styled-components": "^5.3.3",
     "swr": "0.4.0",
-    "tailwindcss": "2.0.2"
+    "tailwindcss": "2.0.2",
+    "video-canvas": "^4.0.3"
   },
   "devDependencies": {
     "@babel/core": "^7.16.0",
