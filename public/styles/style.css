@@ -194,6 +194,11 @@
   height: 100%;
 }
 
+.mob_screen_select {
+  width: 100vw;
+  height: auto;
+}
+
 .small_mob_video {
   border-radius: 100%;
   object-fit: cover;
@@ -202,7 +207,9 @@
 }
 
 .mob_canvas {
-  background-color: #fff;
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100vw;
   height: 100%;
 }

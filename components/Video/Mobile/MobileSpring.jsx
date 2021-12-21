@@ -58,7 +58,9 @@ const MobileSpring = (props) => {
     isPen,
     setIsPen,
     setIsConnect,
-    setIsQr
+    setIsQr,
+    formTool,
+    setFormTool
   } = props;
   const focusRef = useRef();
   const [addTextValue, setAddTextValue] = useState('');
@@ -66,7 +68,17 @@ const MobileSpring = (props) => {
   const [audioEn, setAudioEn] = useState(true);
   const [videoType, setVideoType] = useState('environment');
   const [device, setDevice] = useState('');
-  const [formTool, setFormTool] = useState(Tools.Pencil);
+
+  // Canvas Event Listener
+  // useEffect(() => {
+  //   if (!isPen) return;
+  //   console.log('dddd');
+  //   const canvas = document.querySelector('.upper-canvas');
+  //   // canvas.style.touchAction = 'auto';
+  //   canvas.addEventListener('click', move, { passive: false });
+  //   return () => canvas.removeEventListener('click', move, { passive: false });
+  // }, [isPen]);
+
   useEffect(() => {
     if (streamId) {
       streamId.forEach((value) => {
@@ -107,6 +119,7 @@ const MobileSpring = (props) => {
   };
 
   const clear = () => {
+    speer.send('clear-canvas');
     sketchRef.current.clear();
   };
 

@@ -29,7 +29,11 @@ const BarModal = (props) => {
     handleCanvasStream,
     setActiveRemoteCanvas,
     isScreen,
-    isCamera
+    isCamera,
+    onPeerCanvas,
+    endRect,
+    endCircle,
+    clearCanvas
   } = props;
   const [qr, setQr] = useState(null);
   const [speer, setSpeer] = useState(null);
@@ -100,7 +104,7 @@ const BarModal = (props) => {
       objectMode: true,
       answerOptions: { offerToReceiveAudio: true, offerToReceiveVideo: true }
     });
-    peer.addTransceiver('video', undefined);
+    // peer.addTransceiver('video', undefined);
     peer.addTransceiver('audio', undefined);
     peer.on('signal', (peerData) => {
       console.log(peerData);
@@ -123,11 +127,16 @@ const BarModal = (props) => {
       });
     });
     peer.on('data', (data) => {
-      console.log(data);
       if (data === 'conn') setActiveRemoteStream(true);
       if (data === 'truePen') setActiveRemoteCanvas(true);
       if (data === 'falsePen') setActiveRemoteCanvas(false);
       if (data === 'close-conn') closePeer();
+      if (data === 'end-rect') endRect();
+      if (data === 'end-circle') endCircle();
+      if (data === 'clear-canvas') clearCanvas();
+      if (JSON.parse(data).type === 'canvas') {
+        onPeerCanvas(JSON.parse(data));
+      }
     });
     peer.on('negotiate', (data) => {
       console.log(data);

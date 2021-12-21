@@ -52,6 +52,7 @@ const Screen = (props) => {
             maxWidth={videoRef.current && videoRef.current.videoWidth}
           >
             <Video
+              className="des_screen"
               ref={videoRef}
               hidden={!isScreenPlaying}
               onCanPlay={handleCanPlay}

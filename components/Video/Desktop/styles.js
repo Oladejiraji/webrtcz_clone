@@ -25,7 +25,7 @@ export const Video = styled.video`
     -webkit-appearance: none;
   }
   width: 100vw;
-  height: 100%;
+  height: auto;
 `;
 
 export const Button = styled.button`

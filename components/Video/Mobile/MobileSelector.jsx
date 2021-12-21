@@ -104,7 +104,7 @@ const MobileSelector = (props) => {
           </Rnd>
           {!selfDesktopStream && (
             <video
-              className="mob_screen"
+              className="mob_screen_select"
               ref={screenRef}
               autoPlay
               playsInline
@@ -124,7 +124,7 @@ const MobileSelector = (props) => {
       )}
       {!cameraStream && screenStream && !selfDesktopStream && (
         <video
-          className="mob_video"
+          className="mob_screen_select"
           ref={cameraRef}
           autoPlay
           playsInline

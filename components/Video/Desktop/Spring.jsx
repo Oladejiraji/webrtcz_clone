@@ -21,7 +21,11 @@ const Spring = (props) => {
     handleRemoteStream,
     setActiveRemoteStream,
     handleCanvasStream,
-    setActiveRemoteCanvas
+    setActiveRemoteCanvas,
+    onPeerCanvas,
+    endRect,
+    endCircle,
+    clearCanvas
   } = props;
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [open, setOpen] = useState(false);
@@ -105,6 +109,10 @@ const Spring = (props) => {
         setActiveRemoteCanvas={setActiveRemoteCanvas}
         isScreen={isScreen}
         isCamera={isCamera}
+        onPeerCanvas={onPeerCanvas}
+        endRect={endRect}
+        endCircle={endCircle}
+        clearCanvas={clearCanvas}
       />
     </div>
   );

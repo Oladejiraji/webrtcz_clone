@@ -21,6 +21,17 @@ const QrReader = dynamic(() => import('react-qr-scanner'), {
   ssr: false
 });
 
+let lastPoint;
+let originPoint;
+let originLine;
+
+let mouseX;
+let mouseY;
+let startX;
+let startY;
+let midPointX;
+let midPointY;
+
 const Mobile = () => {
   const toast = useToast();
   const [mobileStream, setMobileStream] = useState([]);
@@ -37,6 +48,8 @@ const Mobile = () => {
   const [streamId, setStreamId] = useState(null);
   const [cameraStream, setCameraStream] = useState(null);
   const [screenStream, setScreenStream] = useState(null);
+  const [isCamera, setIsCamera] = useState(false);
+  const [isScreen, setIsScreen] = useState(false);
   const [selfPhoneStream, setSelfPhoneStream] = useState(null);
   const [selfDesktopStream, setSelfDesktopStream] = useState(null);
   const [showRear, setShowRear] = useState(false);
@@ -49,6 +62,9 @@ const Mobile = () => {
   const [canvasStream, setCanvasStream] = useState(null);
   const [scanReady, setScanReady] = useState(false);
   const [qrLoading, setQrLoading] = useState(false);
+  const [formTool, setFormTool] = useState(Tools.Pencil);
+  // const [lastPoint, setLastPoint] = useState(null);
+
   const previewStyle = {
     width: '100%',
     height: 'auto',
@@ -58,22 +74,44 @@ const Mobile = () => {
 
   // Appending the streams to their ids
   useEffect(() => {
+    console.log('here');
     if (streamId && mobileStream.length > 0) {
       mobileStream.forEach((value) => {
         streamId.forEach((child) => {
           if (value.id === child.stream) {
             if (child.type === 'camera') {
               setCameraStream(value);
+              setIsCamera(true);
               console.log(child.type);
             } else if (child.type === 'screen') {
               console.log(child.type);
               setScreenStream(value);
+              setIsScreen(true);
             }
           }
         });
       });
     }
   }, [streamId, mobileStream]);
+
+  // Remove stream id when stream ends
+  useEffect(() => {
+    if (streamId) {
+      if (cameraStream === null) {
+        const copyStreamId = streamId.filter(
+          (value) => value.type !== 'camera'
+        );
+        setStreamId(copyStreamId);
+      }
+      if (screenStream === null) {
+        const copyStreamIdPrime = streamId.filter(
+          (value) => value.type !== 'screen'
+        );
+        setStreamId(copyStreamIdPrime);
+      }
+    }
+  }, [cameraStream, screenStream]);
+
   // Tell remote peer to activate camera
   useEffect(() => {
     if (selfPhoneStream || selfDesktopStream || showRear) {
@@ -91,12 +129,8 @@ const Mobile = () => {
       video: { facingMode: 'environment' }
     });
     setCurrStream(myStream);
-    const myCanStream = document.querySelector('.lower-canvas').captureStream();
-    const context = document.querySelector('.lower-canvas');
-    context.style.backgroundColor = 'white';
-    setCanvasStream(myCanStream);
-    updateResId(myStream, myCanStream, manualQr);
-    const streamData = [myCanStream, myStream];
+    updateResId(myStream, manualQr);
+    const streamData = [myStream];
 
     // console.log(streamData);
     const peer = new Peer({
@@ -106,7 +140,7 @@ const Mobile = () => {
       objectMode: true,
       offerOptions: { offerToReceiveAudio: true, offerToReceiveVideo: true }
     });
-    peer.addTransceiver('video', undefined);
+    // peer.addTransceiver('video', undefined);
     peer.addTransceiver('audio', undefined);
     console.log(manualQr);
     const { data, error } = await supabase
@@ -133,6 +167,13 @@ const Mobile = () => {
         position: 'top',
         isClosable: true
       });
+    });
+    peer.on('data', (data) => {
+      console.log(data);
+      if (data === 'dis-camera') setIsCamera(false);
+      if (data === 'dis-screen') setIsStream(false);
+      if (data === 'conn-screen') setIsStream(true);
+      if (data === 'conn-camera') setIsCamera(true);
     });
     peer.on('negotiate', (data) => {
       console.log(data);
@@ -167,13 +208,13 @@ const Mobile = () => {
     setIsConnect(false);
     setIsQr(false);
     setIsPen(false);
+    console.log(currStream);
+    // currStream.getVideoTracks()[0].stop();
+    // currStream.getAudioTracks()[0].stop();
   };
 
-  const updateResId = async (myStream, myCanStream, manualQr) => {
-    const streamId = [
-      { type: 'camera', stream: myStream.id },
-      { type: 'canvas', stream: myCanStream.id }
-    ];
+  const updateResId = async (myStream, manualQr) => {
+    const streamId = [{ type: 'camera', stream: myStream.id }];
     const { data, error } = await supabase
       .from('session_info')
       .update({ resStream: streamId })
@@ -189,11 +230,161 @@ const Mobile = () => {
     console.log(data);
   };
 
+  const testMove = (e) => {
+    console.log('cvsdv d');
+  };
+
   const handleError = (err) => {
     console.error(err);
   };
+
+  const move = (e) => {
+    if (!isPen) return;
+    const { clientX, clientY } = e.changedTouches[0];
+    // console.log(clientY);
+    if (!lastPoint) {
+      lastPoint = { x: transX(clientX), y: transY(clientY) };
+      return;
+    }
+    if (!originPoint) {
+      originPoint = { x: transX(clientX), y: transY(clientY) };
+      return;
+    }
+    if (!originLine) {
+      originLine = { x: clientX, y: clientY };
+      return;
+    }
+    if (formTool === 'pencil') {
+      broadcast(
+        JSON.stringify({
+          type: 'canvas',
+          lastPoint,
+          x: transX(clientX),
+          y: transY(clientY),
+          color: lineColor,
+          tool: formTool
+        })
+      );
+      lastPoint = { x: transX(clientX), y: transY(clientY) };
+    } else if (formTool === 'rectangle') {
+      let origin = {
+        x: Math.min(originPoint.x, transX(clientX)),
+        y: Math.min(originPoint.y, transY(clientY))
+      };
+      broadcast(
+        JSON.stringify({
+          type: 'canvas',
+          event: 'drawRect',
+          origin: origin,
+          color: lineColor,
+          tool: formTool,
+          originPoint,
+          x: transX(clientX),
+          y: transY(clientY)
+        })
+      );
+    } else if (formTool === 'circle') {
+      mouseX = parseInt(clientX);
+      mouseY = parseInt(clientY);
+      midPointX = (mouseX + startX) / 2;
+      midPointY = (mouseY + startY) / 2;
+      broadcast(
+        JSON.stringify({
+          type: 'canvas',
+          event: 'drawCircle',
+          color: lineColor,
+          tool: formTool,
+          midPointX: transX(midPointX),
+          midPointY: transY(midPointY),
+          mouseX: transX(mouseX),
+          mouseY: transY(mouseY)
+        })
+      );
+    } else if (formTool === 'arrow') {
+      // context.beginPath();
+      // context.moveTo(lastPoint.x, lastPoint.y);
+      // context.lineTo(e.clientX, e.clientY);
+      // context.strokeStyle = "red";
+      // context.lineCap = "round";
+      // context.stroke();
+      // broadcast(
+      //   JSON.stringify({
+      //     type: 'canvas',
+      //     lastPoint,
+      //     x: (clientX),
+      //     y: (clientY),
+      //     color: lineColor,
+      //     tool: formTool
+      //   })
+      // );
+      // lastPoint = { x: e.clientX, y: e.clientY };
+    }
+  };
+
+  const handleTouchStart = (e) => {
+    if (formTool === 'circle') {
+      const { clientX, clientY } = e.changedTouches[0];
+      startX = parseInt(clientX);
+      startY = parseInt(clientY);
+    }
+  };
+
+  const handleTouchEnd = () => {
+    lastPoint = null;
+    originPoint = null;
+    originLine = null;
+    if (formTool === 'rectangle') {
+      speer.send('end-rect');
+    } else if (formTool === 'circle') {
+      speer.send('end-circle');
+    } else if (formTool === 'arrow') {
+      speer.send('end-arrow');
+    }
+  };
+
+  const transX = (value) => {
+    const newValue = value / window.innerWidth;
+    return newValue;
+  };
+
+  const transY = (value) => {
+    const { top, bottom } = document
+      .querySelector('.mob_screen_select')
+      .getBoundingClientRect();
+    if (value <= window.innerHeight / 2) {
+      const newValue =
+        value - top >= 0 ? (value - top) / (bottom - top) : (value - top) / top;
+      return newValue;
+    } else {
+      const newValue =
+        value - bottom <= 0
+          ? (value - top) / (bottom - top)
+          : (value - top) / top;
+      return newValue;
+    }
+  };
+
+  useEffect(() => {
+    if (isConnect && screenStream) {
+      const { top, left } = document
+        .querySelector('.mob_screen_select')
+        .getBoundingClientRect();
+      // const top = vid.offsetTop;
+      console.log(top);
+    }
+  }, [isConnect, screenStream]);
+
+  const broadcast = (data) => {
+    speer.send(data);
+    // console.log(JSON.parse(data));
+  };
+
   return (
-    <Box>
+    <Box
+      onTouchMove={move}
+      onTouchEnd={handleTouchEnd}
+      onTouchStart={handleTouchStart}
+    >
       <Box
         position="relative"
         display="flex"
@@ -203,7 +394,7 @@ const Mobile = () => {
         h="100vh"
         bg="#fff"
       >
-        {mobileStream.length > 0 && isConnect && !isPen && (
+        {mobileStream.length > 0 && isConnect && (
           <>
             <MobileSelector
               cameraStream={cameraStream}
@@ -214,6 +405,9 @@ const Mobile = () => {
               setSelfDesktopStream={setSelfDesktopStream}
               showRear={showRear}
               currStream={currStream}
+              isCamera={isCamera}
+              setIsScreen={setIsScreen}
+              isScreen={isScreen}
             />
           </>
         )}
@@ -237,7 +431,7 @@ const Mobile = () => {
             bg="#fff"
           >
             <Box w="100vw" h="100%">
-              {qrLoading ? (
+              {/* {qrLoading ? (
                 <Box
                   w="100vw"
                   h="100%"
@@ -269,20 +463,16 @@ const Mobile = () => {
                   />
                   <Text color="white">{result}</Text>
                 </Box>
-              )}
+              )} */}
             </Box>
-            {/* <Input
-              type="text"
-              onChange={(e) => setManualQr(e.target.value)}
-              placeholder="Enter Qr object"
-            />
+            <Input type="text" onChange={null} placeholder="Enter Qr object" />
             <Button
               isLoading={loadBtn ? true : false}
               colorScheme="teal"
-              onClick={() => startConn('298')}
+              onClick={() => startConn('429')}
             >
               submit
-            </Button> */}
+            </Button>
           </Box>
         )}
         <MobileSpring
@@ -308,14 +498,22 @@ const Mobile = () => {
           setIsPen={setIsPen}
           setIsConnect={setIsConnect}
           setIsQr={setIsQr}
+          screenStream={screenStream}
+          formTool={formTool}
+          setFormTool={setFormTool}
         />
       </Box>
       {isQr && (
         <span
+          className="canvas_wrap"
           style={
             isPen
               ? { ...sketchStyle, visibility: 'visible' }
-              : { ...sketchStyle, visibility: 'hidden', pointerEvents: 'none' }
+              : {
+                  ...sketchStyle,
+                  visibility: 'hidden',
+                  pointerEvents: 'none'
+                }
           }
         >
           <>
@@ -325,6 +523,8 @@ const Mobile = () => {
               lineWidth={3}
               ref={sketchRef}
               lineColor={lineColor}
+              backgroundColor="rgba(0, 0, 0, 0)"
+              height={1000}
             />
           </>
         </span>
@@ -340,6 +540,7 @@ const sketchStyle = {
   top: 0,
   left: 0,
   width: '100vw',
-  height: '90vh',
-  zIndex: '3'
+  height: '100vh',
+  zIndex: '2',
+  overflow: 'hidden'
 };
