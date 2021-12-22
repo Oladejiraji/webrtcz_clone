@@ -401,7 +401,12 @@ const Mobile = () => {
           </button>
         )}
         {!isQr && (
-          <Button colorScheme="teal" onClick={() => setIsQr(true)}>
+          <Button
+            colorScheme="teal"
+            onClick={() => {
+              setIsQr(true);
+            }}
+          >
             Scan
           </Button>
         )}
@@ -415,7 +420,7 @@ const Mobile = () => {
             bg="#fff"
           >
             <Box w="100vw" h="100%">
-              {/* {qrLoading ? (
+              {qrLoading ? (
                 <Box
                   w="100vw"
                   h="100%"
@@ -447,16 +452,16 @@ const Mobile = () => {
                   />
                   <Text color="red">{result}</Text>
                 </Box>
-              )} */}
+              )}
             </Box>
-            <Input type="text" ref={qrRef} placeholder="Enter Qr object" />
+            {/* <Input type="text" ref={qrRef} placeholder="Enter Qr object" />
             <Button
               isLoading={loadBtn ? true : false}
               colorScheme="teal"
               onClick={() => startConn(qrRef.current.value)}
             >
               submit
-            </Button>
+            </Button> */}
           </Box>
         )}
         <MobileSpring
