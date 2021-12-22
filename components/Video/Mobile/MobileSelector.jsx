@@ -41,23 +41,29 @@ const MobileSelector = (props) => {
         cameraRef.current.srcObject = screenStream;
       }
     } else if (cameraStream && screenStream && isCamera && isScreen) {
+      console.log('heeee');
+      smallCameraRef.current.srcObject = cameraStream;
       if (showRear) {
-        smallCameraRef.current.srcObject = cameraStream;
         screenRef.current.srcObject = currStream;
       } else if (!showRear && selfDesktopStream) {
-        smallCameraRef.current.srcObject = cameraStream;
+        bigSelf.current.srcObject = screenStream;
       } else {
-        smallCameraRef.current.srcObject = cameraStream;
         screenRef.current.srcObject = screenStream;
       }
     }
     if (selfPhoneStream && !selfDesktopStream && !showRear) {
-      console.log(showRear);
       smallSelf.current.srcObject = selfPhoneStream;
-    } else if (!selfPhoneStream && selfDesktopStream) {
+    } else if (!selfPhoneStream && selfDesktopStream && !showRear) {
       bigSelf.current.srcObject = selfDesktopStream;
     }
-  }, [cameraStream, screenStream, selfPhoneStream, showRear, currStream]);
+  }, [
+    cameraStream,
+    screenStream,
+    selfPhoneStream,
+    selfDesktopStream,
+    showRear,
+    currStream
+  ]);
   const style = {
     display: 'flex',
     alignItems: 'center',
@@ -87,7 +93,7 @@ const MobileSelector = (props) => {
           ></video>
         </Rnd>
       )}
-      {selfDesktopStream && (
+      {selfDesktopStream && !showRear && (
         <video
           className="mob_screen"
           ref={bigSelf}
@@ -117,6 +123,15 @@ const MobileSelector = (props) => {
             ></video>
           </Rnd>
           {!selfDesktopStream && (
+            <video
+              className="mob_screen_select"
+              ref={screenRef}
+              autoPlay
+              playsInline
+              muted
+            ></video>
+          )}
+          {selfDesktopStream && showRear && (
             <video
               className="mob_screen_select"
               ref={screenRef}

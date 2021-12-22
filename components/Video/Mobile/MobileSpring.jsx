@@ -95,7 +95,8 @@ const MobileSpring = (props) => {
   const handleChange = async (...args) => {
     setSelectValue(args[0]);
     if (args[0] === '') {
-      setDevice('phone');
+      console.log('null');
+      setDevice('');
       setSelfDesktopStream(null);
       setSelfPhoneStream(null);
     } else if (args[0] === 'phone') {
