@@ -278,8 +278,8 @@ const MobileSpring = (props) => {
                 </h2>
                 <AccordionPanel pb={4}>
                   <Box display="flex" justifyContent="center" gridGap={10}>
-                    <Icon as={BiUndo} w={8} h={8} onClick={undo} />
-                    <Icon as={BiRedo} w={8} h={8} onClick={redo} />
+                    {/* <Icon as={BiUndo} w={8} h={8} onClick={undo} />
+                    <Icon as={BiRedo} w={8} h={8} onClick={redo} /> */}
                     <Icon as={MdClear} w={8} h={8} onClick={clear} />
                   </Box>
                   <Box display="flex" justifyContent="center">
@@ -288,7 +288,7 @@ const MobileSpring = (props) => {
                       onChangeComplete={(color) => setLineColor(color.hex)}
                     />
                   </Box>
-                  <Box display="flex" mt="8px">
+                  {/* <Box display="flex" mt="8px">
                     <Input
                       placeholder="Add Text..."
                       value={addTextValue}
@@ -297,7 +297,7 @@ const MobileSpring = (props) => {
                       size="sm"
                     />
                     <Icon as={GrFormAdd} w={8} h={8} onClick={addText} />
-                  </Box>
+                  </Box> */}
                   <Box display="flex" mt="8px">
                     <Select
                       // placeholder="Select Canvas Tool"
@@ -307,7 +307,7 @@ const MobileSpring = (props) => {
                     >
                       <option value={Tools.Pencil}>Pencil</option>
                       <option value={Tools.Rectangle}>Rectangle</option>
-                      <option value={Tools.Arrow}>Arrow</option>
+                      {/* <option value={Tools.Arrow}>Arrow</option> */}
                       <option value={Tools.Circle}>Circle</option>
                     </Select>
                   </Box>
