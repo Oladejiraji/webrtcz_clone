@@ -482,7 +482,7 @@ const Mobile = () => {
           setIsPen={setIsPen}
           setIsConnect={setIsConnect}
           setIsQr={setIsQr}
-          screenStream={}
+          screenStream={screenStream}
           formTool={formTool}
           setFormTool={setFormTool}
         />
