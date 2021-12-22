@@ -470,7 +470,7 @@ const Mobile = () => {
             <Button
               isLoading={loadBtn ? true : false}
               colorScheme="teal"
-              onClick={() => startConn(rqRef.current.value)}
+              onClick={() => startConn(qrRef.current.value)}
             >
               submit
             </Button>
