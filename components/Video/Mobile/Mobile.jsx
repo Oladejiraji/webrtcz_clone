@@ -126,76 +126,76 @@ const Mobile = () => {
   const startConn = async (manualQr) => {
     setQrLoading(true);
     setLoadBtn(true);
-    if (qrLoading === true) {
-      const myStream = await navigator.mediaDevices.getUserMedia({
-        audio: true,
-        video: { facingMode: 'environment' }
-      });
-      setCurrStream(myStream);
-      updateResId(myStream, manualQr);
-      const streamData = [myStream];
 
-      // console.log(streamData);
-      const peer = new Peer({
-        initiator: false,
-        trickle: false,
-        streams: streamData,
-        objectMode: true,
-        offerOptions: { offerToReceiveAudio: true, offerToReceiveVideo: true }
+    // console.log(streamData);
+    const peer = new Peer({
+      initiator: false,
+      trickle: false,
+      objectMode: true,
+      offerOptions: { offerToReceiveAudio: true, offerToReceiveVideo: true }
+    });
+    // peer.addTransceiver('video', undefined);
+    peer.addTransceiver('audio', undefined);
+    console.log(manualQr);
+    const { data, error } = await supabase
+      .from('session_info')
+      .select()
+      .eq('id', manualQr);
+
+    const myStream = await navigator.mediaDevices.getUserMedia({
+      audio: true,
+      video: { facingMode: 'environment' }
+    });
+    setCurrStream(myStream);
+    updateResId(myStream, manualQr);
+    // const streamData = [myStream];
+    peer.addStream(myStream);
+
+    peer.signal(data[0].sdp.peerData);
+    setStreamId(data[0].stream);
+    peer.on('signal', (data) => {
+      console.log(data);
+      if (data.type !== 'answer') return;
+      console.log(data);
+      updateSdp(data, manualQr);
+    });
+    peer.on('connect', () => {
+      setIsConnect(true);
+      setLoadBtn(false);
+      setScanReady(false);
+      setQrLoading(false);
+      toast({
+        description: 'Connected successfully',
+        status: 'success',
+        duration: 9000,
+        position: 'top',
+        isClosable: true
       });
-      // peer.addTransceiver('video', undefined);
-      peer.addTransceiver('audio', undefined);
-      console.log(manualQr);
-      const { data, error } = await supabase
-        .from('session_info')
-        .select()
-        .eq('id', manualQr);
-      peer.signal(data[0].sdp.peerData);
-      setStreamId(data[0].stream);
-      peer.on('signal', (data) => {
-        console.log(data);
-        if (data.type !== 'answer') return;
-        console.log(data);
-        updateSdp(data, manualQr);
+    });
+    peer.on('data', (data) => {
+      console.log(data);
+      if (data === 'dis-camera') setIsCamera(false);
+      if (data === 'dis-screen') setIsScreen(false);
+      if (data === 'conn-screen') setIsScreen(true);
+      if (data === 'conn-camera') setIsCamera(true);
+    });
+    // peer.on('negotiate', (data) => {
+    //   console.log(data);
+    //   console.log('yoooo');
+    // });
+    peer.on('stream', (stream) => {
+      console.log(stream);
+      setMobileStream((prev) => {
+        return [...prev, stream];
       });
-      peer.on('connect', () => {
-        setIsConnect(true);
-        setLoadBtn(false);
-        setScanReady(false);
-        setQrLoading(false);
-        toast({
-          description: 'Connected successfully',
-          status: 'success',
-          duration: 9000,
-          position: 'top',
-          isClosable: true
-        });
-      });
-      peer.on('data', (data) => {
-        console.log(data);
-        if (data === 'dis-camera') setIsCamera(false);
-        if (data === 'dis-screen') setIsScreen(false);
-        if (data === 'conn-screen') setIsScreen(true);
-        if (data === 'conn-camera') setIsCamera(true);
-      });
-      // peer.on('negotiate', (data) => {
-      //   console.log(data);
-      //   console.log('yoooo');
-      // });
-      peer.on('stream', (stream) => {
-        console.log(stream);
-        setMobileStream((prev) => {
-          return [...prev, stream];
-        });
-      });
-      setSpeer(peer);
-      peer.on('error', (err) => {
-        setScanReady(false);
-        errorConn();
-        setQrLoading(false);
-      });
-      console.log('fhrhfhrhfhrh');
-    }
+    });
+    setSpeer(peer);
+    peer.on('error', (err) => {
+      setScanReady(false);
+      errorConn();
+      setQrLoading(false);
+    });
+    console.log('fhrhfhrhfhrh');
   };
 
   const handleScan = (qrData) => {
