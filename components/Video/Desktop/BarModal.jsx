@@ -140,10 +140,10 @@ const BarModal = (props) => {
         onPeerCanvas(JSON.parse(data));
       }
     });
-    peer.on('negotiate', (data) => {
-      console.log(data);
-      console.log('yoooo');
-    });
+    // peer.on('negotiate', (data) => {
+    //   console.log(data);
+    //   console.log('yoooo');
+    // });
     peer.on('error', (err) => {
       console.log(err);
       errorConn();

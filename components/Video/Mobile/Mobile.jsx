@@ -176,10 +176,10 @@ const Mobile = () => {
       if (data === 'conn-screen') setIsScreen(true);
       if (data === 'conn-camera') setIsCamera(true);
     });
-    peer.on('negotiate', (data) => {
-      console.log(data);
-      console.log('yoooo');
-    });
+    // peer.on('negotiate', (data) => {
+    //   console.log(data);
+    //   console.log('yoooo');
+    // });
     peer.on('stream', (stream) => {
       console.log(stream);
       setMobileStream((prev) => {
