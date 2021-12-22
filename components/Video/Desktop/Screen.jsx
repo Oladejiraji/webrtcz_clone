@@ -8,12 +8,18 @@ const CAPTURE_OPTIONS = {
 };
 
 const Screen = (props) => {
-  const { isScreenPlaying, setIsScreenPlaying, handleScreenStream } = props;
+  const {
+    isScreenPlaying,
+    setIsScreenPlaying,
+    handleScreenStream,
+    screenStream
+  } = props;
   const videoRef = useRef();
 
   const [container, setContainer] = useState({ width: 0, height: 0 });
 
-  const mediaStream = useDisplayMedia(CAPTURE_OPTIONS);
+  const mediaStream = useDisplayMedia(CAPTURE_OPTIONS, screenStream);
+  console.log(screenStream);
   useEffect(() => {
     if (mediaStream) {
       handleScreenStream(mediaStream);
@@ -21,8 +27,10 @@ const Screen = (props) => {
   }, [mediaStream]);
   const [aspectRatio, calculateRatio] = useCardRatio(1.9);
 
-  if (mediaStream && videoRef.current && !videoRef.current.srcObject) {
-    videoRef.current.srcObject = mediaStream;
+  if (screenStream && videoRef.current && !videoRef.current.srcObject) {
+    console.log('.');
+    console.log(screenStream);
+    videoRef.current.srcObject = screenStream;
   }
 
   function handleResize(contentRect) {
@@ -38,7 +46,7 @@ const Screen = (props) => {
     videoRef.current.play();
   }
 
-  if (!mediaStream) {
+  if (!screenStream) {
     return null;
   }
 

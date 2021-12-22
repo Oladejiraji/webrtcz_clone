@@ -25,7 +25,11 @@ const Spring = (props) => {
     onPeerCanvas,
     endRect,
     endCircle,
-    clearCanvas
+    clearCanvas,
+    isConnect,
+    setIsConnect,
+    speer,
+    setSpeer
   } = props;
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [open, setOpen] = useState(false);
@@ -54,6 +58,32 @@ const Spring = (props) => {
     }
   };
 
+  const handleSetCamera = () => {
+    if (!isConnect) {
+      setIsCamera(!isCamera);
+    } else {
+      setIsCamera(!isCamera);
+      if (isCamera) {
+        speer.send('dis-camera');
+      } else {
+        speer.send('conn-camera');
+      }
+    }
+  };
+
+  const handleSetScreen = () => {
+    if (!isConnect) {
+      setIsScreen(!isScreen);
+    } else {
+      setIsScreen(!isScreen);
+      if (isScreen) {
+        speer.send('dis-screen');
+      } else {
+        speer.send('conn-screen');
+      }
+    }
+  };
+
   return (
     <div>
       {/* <button className="openSpring" onClick={() => setOpen(true)}>
@@ -68,10 +98,7 @@ const Spring = (props) => {
       >
         <Box display="flex" justifyContent="center" py="5px">
           <Box mr="40px" ml="40px">
-            <button
-              className="camera_btn"
-              onClick={() => setIsCamera(!isCamera)}
-            >
+            <button className="camera_btn" onClick={handleSetCamera}>
               {isCamera ? (
                 <Icon as={BiCameraOff} w={23} h={23} />
               ) : (
@@ -80,10 +107,7 @@ const Spring = (props) => {
             </button>
           </Box>
           <Box mr="40px" ml="40px">
-            <button
-              className="camera_btn"
-              onClick={() => setIsScreen(!isScreen)}
-            >
+            <button className="camera_btn" onClick={handleSetScreen}>
               {isScreen ? (
                 <Icon as={MdDesktopAccessDisabled} w={23} h={23} />
               ) : (
@@ -113,6 +137,8 @@ const Spring = (props) => {
         endRect={endRect}
         endCircle={endCircle}
         clearCanvas={clearCanvas}
+        setIsConnect={setIsConnect}
+        setSpeer={setSpeer}
       />
     </div>
   );

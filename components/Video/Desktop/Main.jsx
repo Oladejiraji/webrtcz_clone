@@ -39,6 +39,8 @@ const Main = () => {
   const [canvasContext, setCanvasContext] = useState(null);
   const [canvasOverlayContext, setCanvasOverlayContext] = useState(null);
   const [currColor, setCurrColor] = useState('blue');
+  const [isConnect, setIsConnect] = useState(false);
+  const [speer, setSpeer] = useState(null);
 
   useEffect(() => {
     if (remoteStream && activeRemoteStream) {
@@ -305,6 +307,7 @@ const Main = () => {
           onCapture={onCapture}
           isScreen={isScreen}
           setIsScreen={setIsScreen}
+          screenStream={screenStream}
           handleScreenStream={handleScreenStream}
         />
       )}
@@ -316,6 +319,7 @@ const Main = () => {
           setIsCanvasEmpty={setIsCanvasEmpty}
           onClear={onClear}
           onCapture={onCapture}
+          mediaStream={mediaStream}
           handleMediaStream={handleMediaStream}
         />
       )}
@@ -339,6 +343,7 @@ const Main = () => {
               onClear={onClear}
               onCapture={onCapture}
               setIsCamera={setIsCamera}
+              mediaStream={mediaStream}
               handleMediaStream={handleMediaStream}
             />
           </Rnd>
@@ -361,6 +366,10 @@ const Main = () => {
         endRect={endRect}
         endCircle={endCircle}
         clearCanvas={clearCanvas}
+        isConnect={isConnect}
+        setIsConnect={setIsConnect}
+        speer={speer}
+        setSpeer={setSpeer}
       />
     </div>
   );

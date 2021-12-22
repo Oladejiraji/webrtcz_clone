@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-export default function useUserMedia(requestedMedia) {
+export default function useUserMedia(requestedMedia, currStream) {
   const [mediaStream, setMediaStream] = useState(null);
 
   useEffect(() => {
@@ -15,7 +15,7 @@ export default function useUserMedia(requestedMedia) {
       }
     }
 
-    if (!mediaStream) {
+    if (!mediaStream && !currStream) {
       enableStream();
     } else {
       return function cleanup() {
@@ -26,5 +26,5 @@ export default function useUserMedia(requestedMedia) {
     }
   }, [mediaStream, requestedMedia]);
 
-  return mediaStream;
+  return currStream ? null : mediaStream;
 }

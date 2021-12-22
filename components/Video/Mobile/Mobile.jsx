@@ -171,8 +171,8 @@ const Mobile = () => {
     peer.on('data', (data) => {
       console.log(data);
       if (data === 'dis-camera') setIsCamera(false);
-      if (data === 'dis-screen') setIsStream(false);
-      if (data === 'conn-screen') setIsStream(true);
+      if (data === 'dis-screen') setIsScreen(false);
+      if (data === 'conn-screen') setIsScreen(true);
       if (data === 'conn-camera') setIsCamera(true);
     });
     peer.on('negotiate', (data) => {
@@ -431,7 +431,7 @@ const Mobile = () => {
             bg="#fff"
           >
             <Box w="100vw" h="100%">
-              {qrLoading ? (
+              {/* {qrLoading ? (
                 <Box
                   w="100vw"
                   h="100%"
@@ -463,16 +463,16 @@ const Mobile = () => {
                   />
                   <Text color="white">{result}</Text>
                 </Box>
-              )}
+              )} */}
             </Box>
-            {/* <Input type="text" onChange={null} placeholder="Enter Qr object" />
+            <Input type="text" onChange={null} placeholder="Enter Qr object" />
             <Button
               isLoading={loadBtn ? true : false}
               colorScheme="teal"
-              onClick={() => startConn('429')}
+              onClick={() => startConn('433')}
             >
               submit
-            </Button> */}
+            </Button>
           </Box>
         )}
         <MobileSpring

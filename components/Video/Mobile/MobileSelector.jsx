@@ -10,7 +10,9 @@ const MobileSelector = (props) => {
     selfDesktopStream,
     setSelfDesktopStream,
     showRear,
-    currStream
+    currStream,
+    isScreen,
+    isCamera
   } = props;
   const cameraRef = useRef();
   const smallCameraRef = useRef();
@@ -18,15 +20,27 @@ const MobileSelector = (props) => {
   const smallSelf = useRef();
   const bigSelf = useRef();
   useEffect(() => {
-    if (cameraStream && !screenStream && !selfDesktopStream) {
+    if (
+      cameraStream &&
+      isCamera &&
+      !isScreen &&
+      !screenStream &&
+      !selfDesktopStream
+    ) {
       cameraRef.current.srcObject = cameraStream;
-    } else if (!cameraStream && screenStream && !selfDesktopStream) {
+    } else if (
+      !cameraStream &&
+      screenStream &&
+      !isCamera &&
+      isScreen &&
+      !selfDesktopStream
+    ) {
       if (showRear) {
         cameraRef.current.srcObject = currStream;
       } else {
         cameraRef.current.srcObject = screenStream;
       }
-    } else if (cameraStream && screenStream) {
+    } else if (cameraStream && screenStream && isCamera && isScreen) {
       if (showRear) {
         smallCameraRef.current.srcObject = cameraStream;
         screenRef.current.srcObject = currStream;
@@ -82,7 +96,7 @@ const MobileSelector = (props) => {
           muted
         ></video>
       )}
-      {cameraStream && screenStream && (
+      {cameraStream && screenStream && isCamera && isScreen && (
         <div className="mob_wrap">
           <Rnd
             onResize={null}
@@ -113,24 +127,32 @@ const MobileSelector = (props) => {
           )}
         </div>
       )}
-      {cameraStream && !screenStream && !selfDesktopStream && (
-        <video
-          className="mob_video"
-          ref={cameraRef}
-          autoPlay
-          playsInline
-          muted
-        ></video>
-      )}
-      {!cameraStream && screenStream && !selfDesktopStream && (
-        <video
-          className="mob_screen_select"
-          ref={cameraRef}
-          autoPlay
-          playsInline
-          muted
-        ></video>
-      )}
+      {cameraStream &&
+        !screenStream &&
+        isCamera &&
+        !isScreen &&
+        !selfDesktopStream && (
+          <video
+            className="mob_video"
+            ref={cameraRef}
+            autoPlay
+            playsInline
+            muted
+          ></video>
+        )}
+      {!cameraStream &&
+        screenStream &&
+        !isCamera &&
+        isScreen &&
+        !selfDesktopStream && (
+          <video
+            className="mob_screen_select"
+            ref={cameraRef}
+            autoPlay
+            playsInline
+            muted
+          ></video>
+        )}
     </>
   );
 };

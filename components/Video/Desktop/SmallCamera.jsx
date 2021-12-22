@@ -14,23 +14,23 @@ const SmallCamera = (props) => {
   const {
     isVideoPlaying,
     setIsVideoPlaying,
-    setIsCamera,
-    handleMediaStream
+    handleMediaStream,
+    mediaStream
   } = props;
   const videoRef = useRef();
 
   const [container, setContainer] = useState({ width: 0, height: 0 });
 
-  const mediaStream = useUserMedia(CAPTURE_OPTIONS);
+  const currStream = mediaStream ? null : useUserMedia(CAPTURE_OPTIONS);
   const [aspectRatio, calculateRatio] = useCardRatio(1.9);
-  if (mediaStream && videoRef.current && !videoRef.current.srcObject) {
-    videoRef.current.srcObject = mediaStream;
+  if (currStream && videoRef.current && !videoRef.current.srcObject) {
+    videoRef.current.srcObject = currStream;
   }
   useEffect(() => {
-    if (mediaStream) {
-      handleMediaStream(mediaStream);
+    if (currStream) {
+      handleMediaStream(currStream);
     }
-  }, [mediaStream]);
+  }, [currStream]);
 
   function handleResize(contentRect) {
     setContainer({
@@ -45,7 +45,7 @@ const SmallCamera = (props) => {
     videoRef.current.play();
   }
 
-  if (!mediaStream) {
+  if (!cameraStream) {
     return null;
   }
   const handleCancel = (e) => {
