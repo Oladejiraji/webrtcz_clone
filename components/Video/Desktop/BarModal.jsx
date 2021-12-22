@@ -158,8 +158,10 @@ const BarModal = (props) => {
   const closePeer = () => {
     console.log('deji');
     setSessionId(null);
-    setActiveRemoteCanvas(null);
-    setActiveRemoteStream(null);
+    setActiveRemoteCanvas(false);
+    setActiveRemoteStream(false);
+    handleRemoteStream(null);
+    handleRemoteStream(null);
     setIsConnect(false);
   };
 
