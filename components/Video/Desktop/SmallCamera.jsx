@@ -45,7 +45,7 @@ const SmallCamera = (props) => {
     videoRef.current.play();
   }
 
-  if (!cameraStream) {
+  if (!currStream) {
     return null;
   }
   const handleCancel = (e) => {
