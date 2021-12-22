@@ -431,7 +431,7 @@ const Mobile = () => {
             bg="#fff"
           >
             <Box w="100vw" h="100%">
-              {/* {qrLoading ? (
+              {qrLoading ? (
                 <Box
                   w="100vw"
                   h="100%"
@@ -463,16 +463,16 @@ const Mobile = () => {
                   />
                   <Text color="white">{result}</Text>
                 </Box>
-              )} */}
+              )}
             </Box>
-            <Input type="text" onChange={null} placeholder="Enter Qr object" />
+            {/* <Input type="text" onChange={null} placeholder="Enter Qr object" />
             <Button
               isLoading={loadBtn ? true : false}
               colorScheme="teal"
-              onClick={() => startConn('433')}
+              onClick={() => startConn('439')}
             >
               submit
-            </Button>
+            </Button> */}
           </Box>
         )}
         <MobileSpring

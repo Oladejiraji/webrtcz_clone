@@ -245,9 +245,19 @@ const Main = () => {
   const onCapture = () => {
     console.log('captured');
   };
-  const handleScreenStream = (screenStream) => {
+  const handleScreenStream = (currStream) => {
     // console.log(screenStream);
-    setScreenStream(screenStream);
+    if (isConnect) {
+      console.log(screenStream);
+      const oldTrack = screenStream.getVideoTracks()[0];
+      const newTrack = currStream.getVideoTracks()[0];
+      speer.replaceTrack(oldTrack, newTrack, screenStream);
+      screenStream.removeTrack(oldTrack);
+      screenStream.addTrack(newTrack);
+      setScreenStream(currStream);
+    } else {
+      setScreenStream(currStream);
+    }
   };
   const handleMediaStream = (mediaStream) => {
     // console.log(mediaStream);

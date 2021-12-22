@@ -18,8 +18,8 @@ const Screen = (props) => {
 
   const [container, setContainer] = useState({ width: 0, height: 0 });
 
-  const mediaStream = useDisplayMedia(CAPTURE_OPTIONS, screenStream);
-  console.log(screenStream);
+  const mediaStream = useDisplayMedia(CAPTURE_OPTIONS);
+  console.log(mediaStream);
   useEffect(() => {
     if (mediaStream) {
       handleScreenStream(mediaStream);

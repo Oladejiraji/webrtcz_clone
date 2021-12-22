@@ -19,7 +19,7 @@ const Camera = (props) => {
 
   const [container, setContainer] = useState({ width: 0, height: 0 });
 
-  const currStream = mediaStream ? null : useUserMedia(CAPTURE_OPTIONS);
+  const currStream = useUserMedia(CAPTURE_OPTIONS);
   const [aspectRatio, calculateRatio] = useCardRatio(1);
 
   if (currStream && videoRef.current && !videoRef.current.srcObject) {
