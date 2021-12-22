@@ -60,7 +60,8 @@ const MobileSpring = (props) => {
     setIsConnect,
     setIsQr,
     formTool,
-    setFormTool
+    setFormTool,
+    screenStream
   } = props;
   const focusRef = useRef();
   const [addTextValue, setAddTextValue] = useState('');
@@ -261,7 +262,9 @@ const MobileSpring = (props) => {
           ) : (
             <Icon as={AiOutlineAudio} w={8} h={8} onClick={toggleAudio} />
           )}
-          <Icon as={BsPen} w={8} h={8} ml="60px" onClick={togglePen} />
+          {screenStream && (
+            <Icon as={BsPen} w={8} h={8} ml="60px" onClick={togglePen} />
+          )}
         </Box>
         <Box>
           {isPen && (
