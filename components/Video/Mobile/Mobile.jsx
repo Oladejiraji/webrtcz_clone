@@ -199,9 +199,9 @@ const Mobile = () => {
     if (qrData !== null && !scanReady) {
       const qrNo = parseInt(qrData.text);
       console.log(qrNo);
+      setQrLoading(true);
       startConn(qrNo);
       setScanReady(true);
-      setQrLoading(true);
     }
   };
 
